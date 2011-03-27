@@ -62,11 +62,10 @@ public class ViewAll extends javax.swing.JFrame {
 	private List<Integer> filterIndicies;
 	private boolean filterByAllFields;
 	Font kanjiFont = new Font("Hiragino Mincho Pro", Font.PLAIN, 26);
-	private JScrollPane detailsScrollPane;
+	private JPanel detailsScrollPane;
 	private JSplitPane summaryAndDetailsSplitPanel;
 	private JSplitPane mainSplitPanel;
 	private JPanel relativesPanel;
-	private JEditorPane detailsEditorPane;
 	private JTextArea relativesTextArea;
 	Font romanFont = new Font("Helvetica", Font.PLAIN, 16);
 	Font searchTextFieldFont = new Font("Lucida Grande", Font.PLAIN, 19);
@@ -225,26 +224,15 @@ public class ViewAll extends javax.swing.JFrame {
 							.addListSelectionListener(new ListSelectionListener() {
 								@Override
 								public void valueChanged(ListSelectionEvent e) {
-									try {
-										int selectionIndex = e.getFirstIndex();
-										String heisigIndex = ""
-												+ dataTable
-														.getModel()
-														.getValueAt(
-																selectionIndex,
-																KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
-										String username;
-										username = System.getProperty("user.name");
-										detailsEditorPane
-												.setPage("file:///Users/" + username + "/Documents/Notes/Japanese/workspace/Insig/output/html/details/heisig-item-"
-														+ heisigIndex + ".html");
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-										detailsEditorPane
-												.setText("Could not find url... "
-														+ e.toString());
-									}
+									int selectionIndex = e.getFirstIndex();
+									//FIXME this code is wrong
+									String heisigIndex = ""
+											+ dataTable
+													.getModel()
+													.getValueAt(
+															selectionIndex,
+															KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
+									
 								}
 							});
 					//comparing integers
@@ -304,18 +292,7 @@ public class ViewAll extends javax.swing.JFrame {
 				}
 			}
 			{
-				detailsScrollPane = new JScrollPane();
-				detailsScrollPane.setPreferredSize(new java.awt.Dimension(453,
-						329));
-				{
-					String username;
-					username = System.getProperty("user.name");
-					detailsEditorPane = new JEditorPane(
-							"file:///Users/" + username + "/Development/TUTU/Workspace/TUTU/test-output/TUTU/toc.html");
-					detailsScrollPane.setViewportView(detailsEditorPane);
-					//						detailsTextArea.setPreferredSize(new java.awt.Dimension(187, 719));
-					detailsEditorPane.setEditable(false);
-				}
+				detailsScrollPane = new JPanel();
 			}
 
 			//////////////////////////////////////////////////////////
