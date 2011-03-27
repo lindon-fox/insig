@@ -1,5 +1,6 @@
 package ehe.insig;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -22,11 +23,12 @@ public class HesigView {
 				List<HeisigItem> kanji = hesigDataReader.readCoreData();
 				HTMLKanjiDetailsGenerator htmlKanjiDetailsGenerator = new HTMLKanjiDetailsGenerator(kanji);
 				
-				//do not generate html files... atm
-				htmlKanjiDetailsGenerator.generateSummaryHTMLPages();
-				htmlKanjiDetailsGenerator.generateDetailHTMLPages();
+				//do not generate html files... atm... later this can be done through a direct command. 
+//				htmlKanjiDetailsGenerator.generateSummaryHTMLPages();
+//				htmlKanjiDetailsGenerator.generateDetailHTMLPages();
 				
 				System.out.println(hesigDataReader.toString());
+				
 				ViewAll inst = new ViewAll(kanji);
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);

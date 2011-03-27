@@ -101,7 +101,7 @@ public class HesigDataReader {
 
 	public HeisigItem processLine(String line) {
 		HeisigItem heisigItem;
-		int heisigIndex;
+		String heisigIndex;
 		String kanji;
 		String keywordVersion3;
 		String keywordVersion4;
@@ -118,17 +118,7 @@ public class HesigDataReader {
 		// key word
 		// /////////////////////////////////
 		String entry = entries[0];
-		try {
-			heisigIndex = Integer.parseInt(entry);
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-			problems
-					.add("There was a problen when trying to parse this line:"
-							+ line
-							+ ". I am going to ignore this line and try and parse the rest. Try and fix this line for next time. In the mean time here are some of the details of the pronlem that you may ot may not find useful: "
-							+ e.toString());
-			return null;
-		}
+		heisigIndex = entry;
 		// /////////////////////////////////
 		// Kanji
 		// /////////////////////////////////

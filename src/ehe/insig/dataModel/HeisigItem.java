@@ -11,7 +11,7 @@ import java.util.List;
   * 2. add the primitive elements.
  */
 public class HeisigItem {
-	protected int heisigIndex;
+	protected String heisigIndex;
 	protected int insigIndex;
 	protected String kanji;
 	protected List<KeywordVersions> keywords;
@@ -38,7 +38,7 @@ public class HeisigItem {
 		this.lessonNumber = lessonNumber;
 	}
 	
-	public HeisigItem(int heisigIndex, String kanji, 
+	public HeisigItem(String heisigIndex, String kanji, 
 			int kanjiStrokeCount, int indexOrdinal, int lessonNumber) {
 		super();
 		this.heisigIndex = heisigIndex;
@@ -48,10 +48,10 @@ public class HeisigItem {
 		this.lessonNumber = lessonNumber;
 		this.keywords = new ArrayList<KeywordVersions>();
 	}
-	public int getHeisigIndex() {
+	public String getHeisigIndex() {
 		return heisigIndex;
 	}
-	public void setHeisigIndex(int heisigNumber) {
+	public void setHeisigIndex(String heisigNumber) {
 		this.heisigIndex = heisigNumber;
 	}
 	public int getInsigIndex() {

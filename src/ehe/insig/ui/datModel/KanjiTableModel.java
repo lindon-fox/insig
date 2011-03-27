@@ -1,6 +1,7 @@
 package ehe.insig.ui.datModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -16,10 +17,15 @@ public class KanjiTableModel extends AbstractTableModel {
 	public static final int LESSON_NUMBER_COLUMN_INDEX = 4;
 	
 	protected List<String> columnNames;
-	protected List<HeisigItem> items;
+	protected List<HeisigItem> items;//collection, maintaining order
+	protected HashMap<String, HeisigItem> itemMap;//a hashmap indexed on the heisig number
 	public KanjiTableModel(List<HeisigItem> items) {
 		super();
 		this.items = items;
+		itemMap = new HashMap<String, HeisigItem>();
+		for (HeisigItem item : items) {
+			itemMap.put(item.getHeisigIndex(), item);
+		}
 		columnNames = new ArrayList<String>();
 		columnNames.add("Kanji");
 		columnNames.add("Index");
@@ -77,6 +83,11 @@ public class KanjiTableModel extends AbstractTableModel {
 			break;
 		}
 		return item;
+	}
+
+
+	public HeisigItem get(String heisigIndex) {
+		return itemMap.get(heisigIndex);
 	}
 
 }
