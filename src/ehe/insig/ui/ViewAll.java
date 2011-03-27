@@ -5,8 +5,12 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -195,6 +199,7 @@ public class ViewAll extends javax.swing.JFrame {
 			{
 				{
 					relativesPanel = new JPanel();
+					relativesPanel.setVisible(false);
 					BorderLayout relativesPanelLayout = new BorderLayout();
 					relativesPanel.setLayout(relativesPanelLayout);
 					{
@@ -220,6 +225,7 @@ public class ViewAll extends javax.swing.JFrame {
 				{
 					dataTable = new JTable();
 					mainScrollPanel.setViewportView(dataTable);
+
 					dataTable.setName("dataTable");
 					dataTable.setModel(kanjiTableModel);
 					tableRowSorter = new TableRowSorter<KanjiTableModel>(
@@ -227,6 +233,15 @@ public class ViewAll extends javax.swing.JFrame {
 					dataTable.setRowSorter(tableRowSorter);
 					dataTable
 							.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);//this can be changed in the future to show multiple entries in the details view (like the kanji dictionary does)
+					dataTable.addFocusListener(new FocusAdapter() {
+						public void focusGained(FocusEvent evt) {
+							if (dataTable.getSelectedRow() < 0) {
+								dataTable.setRowSelectionInterval(0, 0);
+								mainScrollPanel.getViewport().setViewPosition(
+										new Point(0, 0));
+							}
+						}
+					});
 					ListSelectionModel listSelectionModel = dataTable
 							.getSelectionModel();
 					listSelectionModel
@@ -239,8 +254,13 @@ public class ViewAll extends javax.swing.JFrame {
 										//selection got filtered away...
 										//do nothing atm, but something in the future...
 									} else {
-										int modelRow = dataTable.convertRowIndexToModel(viewRow);
-										String heisigIndex = (String) dataTable.getModel().getValueAt(modelRow, KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
+										int modelRow = dataTable
+												.convertRowIndexToModel(viewRow);
+										String heisigIndex = (String) dataTable
+												.getModel()
+												.getValueAt(
+														modelRow,
+														KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
 										setDetails(heisigIndex);
 									}
 								}
@@ -303,7 +323,8 @@ public class ViewAll extends javax.swing.JFrame {
 			}
 			{
 				detailsScrollPanel = new JScrollPane();
-				detailsScrollPanel.setPreferredSize(new java.awt.Dimension(489, 329));
+				detailsScrollPanel.setPreferredSize(new java.awt.Dimension(489,
+						329));
 				detailsScrollPanel.setBackground(null);
 			}
 
@@ -313,7 +334,8 @@ public class ViewAll extends javax.swing.JFrame {
 			summaryAndDetailsSplitPanel = new JSplitPane(
 					JSplitPane.VERTICAL_SPLIT, mainScrollPanel,
 					detailsScrollPane);
-			summaryAndDetailsSplitPanel.add(detailsScrollPanel, JSplitPane.RIGHT);
+			summaryAndDetailsSplitPanel.add(detailsScrollPanel,
+					JSplitPane.RIGHT);
 			detailsScrollPanel.setName("detailsScrollPanel");
 			{
 				detailsScrollPane = new JPanel();
@@ -324,32 +346,43 @@ public class ViewAll extends javax.swing.JFrame {
 					detailsKanjiContentPanel = new JPanel();
 					detailsKanjiContentPanel.setBackground(Color.WHITE);
 					BorderLayout detailsKanjiContentPanelLayout = new BorderLayout();
-					detailsKanjiContentPanel.setLayout(detailsKanjiContentPanelLayout);
+					detailsKanjiContentPanel
+							.setLayout(detailsKanjiContentPanelLayout);
 					detailsScrollPane.add(detailsKanjiContentPanel,
 							BorderLayout.WEST);
 					{
 						detailsStrokeAndKanjiPanel = new JPanel();
 						detailsStrokeAndKanjiPanel.setBackground(Color.WHITE);
-						BoxLayout detailsStrokeAndKanjiPanelLayout = new BoxLayout(detailsStrokeAndKanjiPanel, javax.swing.BoxLayout.Y_AXIS);
-						detailsStrokeAndKanjiPanel.setLayout(detailsStrokeAndKanjiPanelLayout);
-						detailsKanjiContentPanel.add(detailsStrokeAndKanjiPanel, BorderLayout.NORTH);
+						BoxLayout detailsStrokeAndKanjiPanelLayout = new BoxLayout(
+								detailsStrokeAndKanjiPanel,
+								javax.swing.BoxLayout.Y_AXIS);
+						detailsStrokeAndKanjiPanel
+								.setLayout(detailsStrokeAndKanjiPanelLayout);
+						detailsKanjiContentPanel.add(
+								detailsStrokeAndKanjiPanel, BorderLayout.NORTH);
 						{
 							detailsKanjiLabel = new JTextField();
 							detailsStrokeAndKanjiPanel.add(detailsKanjiLabel);
 							detailsKanjiLabel.setFont(kanjiLargeFont);
-							detailsKanjiLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+							detailsKanjiLabel
+									.setAlignmentX(Component.CENTER_ALIGNMENT);
 							makeTextFieldLookLikeLabel(detailsKanjiLabel);
 							detailsKanjiLabel.setName("detailKanjiLanel");
 						}
 						{
 							detailsStrokeCountLabel = new JTextField();
 							detailsStrokeCountLabel.setFont(romanFont);
-							detailsStrokeAndKanjiPanel.add(detailsStrokeCountLabel);
-							detailsStrokeCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-							detailsStrokeCountLabel.setHorizontalAlignment(JTextField.CENTER);
-							detailsStrokeCountLabel.setToolTipText("Stroke count");
+							detailsStrokeAndKanjiPanel
+									.add(detailsStrokeCountLabel);
+							detailsStrokeCountLabel
+									.setAlignmentX(Component.CENTER_ALIGNMENT);
+							detailsStrokeCountLabel
+									.setHorizontalAlignment(JTextField.CENTER);
+							detailsStrokeCountLabel
+									.setToolTipText("Stroke count");
 							makeTextFieldLookLikeLabel(detailsStrokeCountLabel);
-							detailsStrokeCountLabel.setName("detailsStrokeCountLabel");
+							detailsStrokeCountLabel
+									.setName("detailsStrokeCountLabel");
 						}
 					}
 				}
@@ -357,19 +390,25 @@ public class ViewAll extends javax.swing.JFrame {
 					detailsMainContentPanel = new JPanel();
 					detailsMainContentPanel.setBackground(Color.WHITE);
 					BorderLayout detailsMainContentPanelLayout = new BorderLayout();
-					detailsMainContentPanel.setLayout(detailsMainContentPanelLayout);
+					detailsMainContentPanel
+							.setLayout(detailsMainContentPanelLayout);
 					detailsScrollPane.add(detailsMainContentPanel,
 							BorderLayout.CENTER);
 					{
 						detailsMainContentHeadingPanel = new JPanel();
-						detailsMainContentHeadingPanel.setBackground(Color.WHITE);
+						detailsMainContentHeadingPanel
+								.setBackground(Color.WHITE);
 						BorderLayout detailsMainContentHeadingPanelLayout = new BorderLayout();
-						detailsMainContentHeadingPanel.setLayout(detailsMainContentHeadingPanelLayout);
-						detailsMainContentPanel.add(detailsMainContentHeadingPanel, BorderLayout.NORTH);
+						detailsMainContentHeadingPanel
+								.setLayout(detailsMainContentHeadingPanelLayout);
+						detailsMainContentPanel.add(
+								detailsMainContentHeadingPanel,
+								BorderLayout.NORTH);
 						{
 							detailsKeywordLabel = new JTextField();
 							makeTextFieldLookLikeLabel(detailsKeywordLabel);
-							detailsMainContentHeadingPanel.add(detailsKeywordLabel, BorderLayout.EAST);
+							detailsMainContentHeadingPanel.add(
+									detailsKeywordLabel, BorderLayout.EAST);
 							Font keywordFont = new Font(romanFont.getName(),
 									romanFont.getStyle(), 60);
 							detailsKeywordLabel.setFont(keywordFont);
@@ -378,13 +417,15 @@ public class ViewAll extends javax.swing.JFrame {
 						{
 							detailsHeisigNumberLabel = new JTextField();
 							makeTextFieldLookLikeLabel(detailsHeisigNumberLabel);
-							detailsMainContentHeadingPanel.add(detailsHeisigNumberLabel, BorderLayout.WEST);
-							Font heisigNumberFont = new Font(romanFont.getName(),
-									romanFont.getStyle(), 40);
+							detailsMainContentHeadingPanel
+									.add(detailsHeisigNumberLabel,
+											BorderLayout.WEST);
+							Font heisigNumberFont = new Font(romanFont
+									.getName(), romanFont.getStyle(), 40);
 							detailsHeisigNumberLabel.setFont(heisigNumberFont);
 							detailsHeisigNumberLabel.setForeground(Color.GRAY);
 							detailsHeisigNumberLabel
-							.setName("detailsHeisigNumberLabel");
+									.setName("detailsHeisigNumberLabel");
 						}
 					}
 				}
@@ -414,9 +455,12 @@ public class ViewAll extends javax.swing.JFrame {
 	}
 
 	private void searchTextFieldKeyReleased(KeyEvent evt) {
-		System.out.println("searchTextField.keyReleased, event=" + evt);
 		// add filter
 		updateFilter();
+		//check for shortcuts?
+		if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+			dataTable.requestFocus();
+		}
 	}
 
 	private void updateFilter() {
@@ -497,17 +541,17 @@ public class ViewAll extends javax.swing.JFrame {
 				|| strokeCountToggleButton.isSelected()
 				|| lessonNumberToggleButton.isSelected();
 	}
-	
-
 
 	private void setDetails(String heisigIndex) {
 		HeisigItem item = kanjiTableModel.get(heisigIndex);
 		detailsHeisigNumberLabel.setText("(#" + item.getHeisigIndex() + ")");
-		detailsHeisigNumberLabel.setToolTipText("Lesson number: " + item.getLessonNumber());
+		detailsHeisigNumberLabel.setToolTipText("Lesson number: "
+				+ item.getLessonNumber());
 		detailsKeywordLabel.setText(item.getKeywords());
 		detailsKanjiLabel.setText(item.getKanji());
 		detailsMainContentHeadingPanel.validate();
-		detailsStrokeCountLabel.setText("[ " + item.getKanjiStrokeCount() + " ]");
+		detailsStrokeCountLabel.setText("[ " + item.getKanjiStrokeCount()
+				+ " ]");
 	}
 
 }
