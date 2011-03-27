@@ -100,10 +100,12 @@ public class HTMLKanjiDetailsGenerator {
 		xml.writeEmptyElement("link");
 		xml.writeAttribute("REL", "STYLESHEET");
 		xml.writeAttribute("type", "text/css");
+		String username = System.getProperty("user.name");
+		//note, this will not work on most computers...
 		xml
 				.writeAttribute(
 						"href",
-						"/Users/johnnygrattan/Documents/Notes/Japanese/workspace/Insig/output/html/insig.css");
+						"/Users/" + username + "/Documents/Notes/Japanese/workspace/Insig/output/insig.css");
 		xml.writeEndElement();//head
 		xml.writeStartElement("body");
 

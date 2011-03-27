@@ -22,6 +22,7 @@ public class HesigView {
 				List<HeisigItem> kanji = hesigDataReader.readCoreData();
 				HTMLKanjiDetailsGenerator htmlKanjiDetailsGenerator = new HTMLKanjiDetailsGenerator(kanji);
 				
+				//do not generate html files... atm
 				htmlKanjiDetailsGenerator.generateSummaryHTMLPages();
 				htmlKanjiDetailsGenerator.generateDetailHTMLPages();
 				

@@ -1,6 +1,6 @@
 package ehe.insig.ui;
-
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -8,12 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -62,6 +61,12 @@ public class ViewAll extends javax.swing.JFrame {
 	private List<Integer> filterIndicies;
 	private boolean filterByAllFields;
 	Font kanjiFont = new Font("Hiragino Mincho Pro", Font.PLAIN, 26);
+	private JLabel detailsHeisigNumberLabel;
+	private JLabel detailsKeywordLabel;
+	Font kanjiLargeFont = new Font("Hiragino Mincho Pro", Font.PLAIN, 132);
+	private JLabel detailKanjiLanel;
+	private JPanel detailsMainContentPanel;
+	private JPanel detailsKanjiContentPanel;
 	private JPanel detailsScrollPane;
 	private JSplitPane summaryAndDetailsSplitPanel;
 	private JSplitPane mainSplitPanel;
@@ -232,7 +237,7 @@ public class ViewAll extends javax.swing.JFrame {
 													.getValueAt(
 															selectionIndex,
 															KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
-									
+									System.out.println(heisigIndex);
 								}
 							});
 					//comparing integers
@@ -293,6 +298,39 @@ public class ViewAll extends javax.swing.JFrame {
 			}
 			{
 				detailsScrollPane = new JPanel();
+				BorderLayout detailsScrollPaneLayout = new BorderLayout();
+				detailsScrollPane.setLayout(detailsScrollPaneLayout);
+				{
+					detailsKanjiContentPanel = new JPanel();
+					FlowLayout detailsKanjiContentPanelLayout = new FlowLayout();
+					detailsKanjiContentPanel.setLayout(detailsKanjiContentPanelLayout);
+					detailsScrollPane.add(detailsKanjiContentPanel, BorderLayout.WEST);
+					{
+						detailKanjiLanel = new JLabel();
+						detailsKanjiContentPanel.add(detailKanjiLanel);
+						detailKanjiLanel.setName("detailKanjiLanel");
+						detailKanjiLanel.setFont(kanjiLargeFont);
+					}
+				}
+				{
+					detailsMainContentPanel = new JPanel();
+					detailsScrollPane.add(detailsMainContentPanel, BorderLayout.CENTER);
+					{
+						detailsKeywordLabel = new JLabel();
+						detailsMainContentPanel.add(detailsKeywordLabel);
+						Font keywordFont = new Font(romanFont.getName(), romanFont.getStyle(), 60);
+						detailsKeywordLabel.setFont(keywordFont);
+						detailsKeywordLabel.setName("detailsKeywordLabel");
+					}
+					{
+						detailsHeisigNumberLabel = new JLabel();
+						detailsMainContentPanel.add(detailsHeisigNumberLabel);
+						Font heisigNumberFont = new Font(romanFont.getName(), romanFont.getStyle(), 60);
+						detailsHeisigNumberLabel.setFont(heisigNumberFont);
+						detailsHeisigNumberLabel.setForeground(Color.GRAY);
+						detailsHeisigNumberLabel.setName("detailsHeisigNumberLabel");
+					}
+				}
 			}
 
 			//////////////////////////////////////////////////////////
