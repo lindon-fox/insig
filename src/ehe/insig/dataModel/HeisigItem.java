@@ -18,25 +18,8 @@ public class HeisigItem {
 	protected int kanjiStrokeCount;
 	protected int indexOrdinal; //not sure what this represents. Can't see how it relates to the index.
 	protected int lessonNumber;
-	
-	public int getKanjiStrokeCount() {
-		return kanjiStrokeCount;
-	}
-	public void setKanjiStrokeCount(int kanjiStrokeCount) {
-		this.kanjiStrokeCount = kanjiStrokeCount;
-	}
-	public int getIndexOrdinal() {
-		return indexOrdinal;
-	}
-	public void setIndexOrdinal(int indexOrdinal) {
-		this.indexOrdinal = indexOrdinal;
-	}
-	public int getLessonNumber() {
-		return lessonNumber;
-	}
-	public void setLessonNumber(int lessonNumber) {
-		this.lessonNumber = lessonNumber;
-	}
+	protected int kanjiRanking;
+	protected List<String> kanjiPrimitiveList;
 	
 	public HeisigItem(String heisigIndex, String kanji, 
 			int kanjiStrokeCount, int indexOrdinal, int lessonNumber) {
@@ -47,6 +30,7 @@ public class HeisigItem {
 		this.indexOrdinal = indexOrdinal;
 		this.lessonNumber = lessonNumber;
 		this.keywords = new ArrayList<KeywordVersions>();
+		this.kanjiPrimitiveList = new ArrayList<String>();
 	}
 	public String getHeisigIndex() {
 		return heisigIndex;
@@ -66,7 +50,35 @@ public class HeisigItem {
 	public void setKanji(String kanji) {
 		this.kanji = kanji;
 	}
+
+	public int getKanjiStrokeCount() {
+		return kanjiStrokeCount;
+	}
+	public void setKanjiStrokeCount(int kanjiStrokeCount) {
+		this.kanjiStrokeCount = kanjiStrokeCount;
+	}
+	public int getIndexOrdinal() {
+		return indexOrdinal;
+	}
+	public void setIndexOrdinal(int indexOrdinal) {
+		this.indexOrdinal = indexOrdinal;
+	}
+	public int getLessonNumber() {
+		return lessonNumber;
+	}
+	public void setLessonNumber(int lessonNumber) {
+		this.lessonNumber = lessonNumber;
+	}
+	public int getKanjiRanking() {
+		return kanjiRanking;
+	}
+	public void setKanjiRanking(int kanjiRanking) {
+		this.kanjiRanking = kanjiRanking;
+	}
 	
+	public void addKanjiPart(String kanjiPart){
+		kanjiPrimitiveList.add(kanjiPart);
+	}
 	/**
 	 * this method will add a new keyword for the version specified
 	 * If there is already a keyword for that version, it will be replaced.
@@ -90,7 +102,29 @@ public class HeisigItem {
 
 	@Override
 	public String toString() {
-			return getKanji() + " = " + getFormattedKeywords() + " [ "+ getKanjiStrokeCount()+" ] {" + getHeisigIndex() + "} <" + getLessonNumber() + ">";
+			return getKanji() + " = " + getFormattedKeywords() + " (" + kanjiPrimitivesToString() + ") - #" + getKanjiRanking() +", [ "+ getKanjiStrokeCount()+" ] {" + getHeisigIndex() + "} <" + getLessonNumber() + ">";
+	}
+	
+	public String kanjiPrimitivesToString() {
+		return kanjiPrimitivesToString(", ");
+	}
+	
+	public String kanjiPrimitivesToString(String seperator) {
+		if(kanjiPrimitiveList.size() == 0){
+			return "";
+		}
+		StringBuilder builder = new StringBuilder();
+		boolean firstPass = true;
+		for (String part : kanjiPrimitiveList) {
+			if(firstPass == true){
+				firstPass = false;
+			}
+			else{
+				builder.append(seperator);
+			}
+			builder.append(part);
+		}
+		return builder.toString();
 	}
 	/**
 	 * This method returns the keyword(s) of the item. If all the version have the same keyword, then
@@ -151,5 +185,32 @@ public class HeisigItem {
 	public String getStory() {
 		return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sagittis sem sit amet urna commodo eget vestibulum nunc elementum. Donec et libero enim, eget tempus nunc. Aliquam non sem augue, a auctor metus. Aliquam vitae lectus turpis, non vestibulum enim. Cras suscipit vulputate sapien, et vulputate nisl tempor eu. Nam eu mi tellus. Etiam ut ante nulla. Maecenas placerat fermentum sodales. ";
 	}
+	public String keywordsToString(String seperator) {
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean firstPass = true;
+		for (KeywordVersions keywordVersion : keywords) {
+			if(firstPass == true){
+				 firstPass = false;
+			 }
+			 else{
+				 stringBuilder.append(seperator);
+			 }
+			boolean firstInnerPass = true;
+			for (Integer version : keywordVersion.versions) {
+				if(firstInnerPass == true){
+					 firstInnerPass = false;
+				 }
+				 else{
+					 stringBuilder.append(seperator);
+				 }
+				stringBuilder.append(version);
+				stringBuilder.append(":");
+				stringBuilder.append(keywordVersion.keyword);
+			}
+		}
+		return stringBuilder.toString();
+	}
+
+	
 	
 }

@@ -85,7 +85,7 @@ public class ViewAll extends javax.swing.JFrame {
 	private KanjiTableModel kanjiTableModel;
 
 	public ViewAll(List<HeisigItem> items) {
-		super();
+		super("insig");
 		kanjiTableModel = new KanjiTableModel(items);
 		filterByAllFields = true;
 		filterIndicies = new ArrayList<Integer>();

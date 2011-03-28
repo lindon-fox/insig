@@ -1,5 +1,6 @@
 package ehe.insig;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,7 +9,8 @@ import javax.swing.SwingUtilities;
 
 import ehe.insig.dataModel.HeisigItem;
 import ehe.insig.io.HTMLKanjiDetailsGenerator;
-import ehe.insig.io.HesigDataReader;
+import ehe.insig.io.HeisigDataReader;
+import ehe.insig.io.HeisigDataWriter;
 import ehe.insig.ui.ViewAll;
 
 public class HesigView {
@@ -20,7 +22,7 @@ public class HesigView {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				HesigDataReader hesigDataReader = new HesigDataReader(null);
+				HeisigDataReader hesigDataReader = new HeisigDataReader(null);
 				List<HeisigItem> kanji = hesigDataReader.readCoreData();
 				//				HTMLKanjiDetailsGenerator htmlKanjiDetailsGenerator = new HTMLKanjiDetailsGenerator(kanji);
 
@@ -30,6 +32,21 @@ public class HesigView {
 
 				//				System.out.println(hesigDataReader.toString());
 
+				//test
+				
+				
+				
+				List<HeisigItem> tempList = hesigDataReader.readListFormatCoreData("/Users/" + System.getProperty("user.name") + "/Documents/Japanese/Kanji with primitives.txt", "");
+				
+				HeisigDataWriter heisigDataWriter = new HeisigDataWriter();
+				try {
+					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare.csv", tempList);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
 				if (kanji == null) {
 					JOptionPane.showMessageDialog(null,
 							"Coult not read the data for the kanji." +

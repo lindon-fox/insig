@@ -4,12 +4,14 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import ehe.insig.dataModel.HeisigItem;
 
@@ -21,17 +23,18 @@ import ehe.insig.dataModel.HeisigItem;
  * the actual kanji. It would also be GREAT if it had the primitives that it
  * used.
  */
-public class HesigDataReader {
+public class HeisigDataReader {
 
-	protected String coreDataPath;
+	private static final String coreDataResourcePath = "/ehe/insig/data/heisig-data.csv";
+	protected String coreDataFilePath;
 	protected List<String> problems;
 
-	public HesigDataReader(String coreDataPath) {
+	public HeisigDataReader(String coreDataPath) {
 		if (coreDataPath == null) {
-			this.coreDataPath = "./src/ehe/insig/data/heisig-data.csv";
+			this.coreDataFilePath = "./src/ehe/insig/data/heisig-data.csv";
 
 		} else {
-			this.coreDataPath = coreDataPath;
+			this.coreDataFilePath = coreDataPath;
 		}
 	}
 
@@ -40,40 +43,91 @@ public class HesigDataReader {
 	}
 
 	public String getCoreDataPath() {
-		return coreDataPath;
+		return coreDataFilePath;
+	}
+
+	/**
+	 * This method take a new-line delimited file and turnes it into a csv file.
+	 * The format expected is: Kanji Frame Keyword Parts Rank
+	 * 
+	 * @param pathIn
+	 * @param pathOut
+	 */
+	public List<HeisigItem> readListFormatCoreData(String pathIn, String resourcePathIn) {
+		List<HeisigItem> kanjiList = null;
+		DataInputStream dataInputStream = null;
+		try {
+			InputStream inputStream = getInputStream(resourcePathIn, pathIn);
+			dataInputStream = new DataInputStream(inputStream);
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(dataInputStream, Charset
+							.forName("UTF-8")));
+			String line;
+			kanjiList = new ArrayList<HeisigItem>();
+			//read off the header:
+
+			line = bufferedReader.readLine();
+			System.out.println(line);
+			line = bufferedReader.readLine();
+			System.out.println(line);
+			line = bufferedReader.readLine();
+			System.out.println(line);
+			line = bufferedReader.readLine();
+			System.out.println(line);
+			line = bufferedReader.readLine();
+			System.out.println(line);
+
+			while ((line = bufferedReader.readLine()) != null) {
+				String kanji = line;
+				line = bufferedReader.readLine();
+				String frame = line;
+				line = bufferedReader.readLine();
+				String keyword = line;
+				line = bufferedReader.readLine();
+				String parts =line;
+				line = bufferedReader.readLine();
+				String rank = line;
+				HeisigItem item = new HeisigItem(frame, kanji, -1, -1, -1);
+				item.addOrReplaceKeyword(-1, keyword);
+				try{
+				item.setKanjiRanking(Integer.parseInt(rank));
+			}
+				catch(NumberFormatException nfe){
+					System.err.println("The rank was expected as a number; " + rank);
+				}
+				StringTokenizer stringTokenizer = new StringTokenizer(parts," , ");
+				while ( stringTokenizer.hasMoreTokens() )
+				{
+				  String token = (String)stringTokenizer.nextToken();
+				  item.addKanjiPart(token);
+				}
+				kanjiList.add(item);
+				
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return kanjiList;
 	}
 
 	public List<HeisigItem> readCoreData() {
 		List<HeisigItem> kanji = null;
 		problems = new ArrayList<String>();
-		assert this.coreDataPath != null;
-		FileInputStream fileInputStream = null;
+		assert this.coreDataFilePath != null;
+		assert this.coreDataResourcePath != null;
 		DataInputStream dataInputStream = null;
 		try {
-			System.out.println("creating inputdata");
-			File inputData = new File(coreDataPath);
-			System.out.println("Created input data.");
-			if (inputData.exists() == false) {
-				System.out.println("maybe we are in a jar file...");
-				InputStream is = getClass().getResourceAsStream(
-						"/ehe/insig/data/heisig-data.csv");
-				System.out.println("go input stream" + is);
-				dataInputStream = new DataInputStream(is);
-				System.out.println("got data input stream." + dataInputStream);
-//				System.out.println("Could not find the file path: \nAbsolute: "
-//						+ inputData.getAbsolutePath() + "\ngetCanonicalPath: "
-//						+ inputData.getCanonicalPath() + "\ngetName: "
-//						+ inputData.getName());
-//				return null;
-			} else {
-				fileInputStream = new FileInputStream(coreDataPath);
-				dataInputStream = new DataInputStream(fileInputStream);
+			InputStream inputStream = getInputStream();
+			dataInputStream = new DataInputStream(inputStream);
 
-			}
-			System.out.println("Checked existance...");
 			// Get the object of DataInputStream
 			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(dataInputStream, Charset.forName("UTF-8")));
+					new InputStreamReader(dataInputStream, Charset
+							.forName("UTF-8")));
 			String line;
 			kanji = new ArrayList<HeisigItem>();
 
@@ -83,23 +137,12 @@ public class HesigDataReader {
 					kanji.add(heisigItem);
 				}
 			}
-
-			for (HeisigItem heisigItem : kanji) {
-				System.out.println(heisigItem.toString());
-			}
 		} catch (Exception e) {
 			problems
 					.add("There was a problem that I don't know what to do with. Here are some details that may or may not be useful; "
 							+ e.toString());
 			System.err.println("There was a problem! \n" + e.toString());
 		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 			if (dataInputStream != null) {
 				try {
 					dataInputStream.close();
@@ -121,6 +164,41 @@ public class HesigDataReader {
 			}
 		}
 		return kanji;
+	}
+
+	/**
+	 * gets the input stream for the core data.
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	private InputStream getInputStream() throws FileNotFoundException {
+		return getInputStream(coreDataResourcePath, coreDataFilePath);
+	}
+
+	/**
+	 * @param resourcePath
+	 * @return an input stream from the file system or from a jar file
+	 * @throws FileNotFoundException
+	 */
+	private InputStream getInputStream(String resourcePath, String filePath)
+			throws FileNotFoundException {
+		InputStream inputStream = null;
+		System.out.println("creating inputdata");
+		File inputData = new File(filePath);
+		System.out.println("Created input data.");
+		if (inputData.exists() == false) {
+			System.out.println("maybe we are in a jar file...");
+			inputStream = getClass().getResourceAsStream(resourcePath);
+			System.out.println("go input stream" + inputStream);
+			if (inputStream == null) {
+				System.err
+						.println("Could not find the resoure in the jar file: "
+								+ coreDataResourcePath);
+			}
+		} else {
+			inputStream = new FileInputStream(filePath);
+		}
+		return inputStream;
 	}
 
 	public HeisigItem processLine(String line) {
@@ -236,6 +314,6 @@ public class HesigDataReader {
 
 	@Override
 	public String toString() {
-		return coreDataPath;
+		return coreDataFilePath;
 	}
 }
