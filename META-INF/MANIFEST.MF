@@ -1,0 +1,6 @@
+Manifest-Version: 0.1
+Rsrc-Class-Path: ./ jnlp.jar appFramework-1.0.jar src.jar
+Class-Path: .
+Rsrc-Main-Class: ehe.insig.HesigView
+Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
+
