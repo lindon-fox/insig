@@ -5,7 +5,9 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +28,19 @@ public class HesigDataReader {
 
 	public HesigDataReader(String coreDataPath) {
 		if (coreDataPath == null) {
-			this.coreDataPath = "./Data/heisig-data.csv";
+			this.coreDataPath = "./src/ehe/insig/data/heisig-data.csv";
 
 		} else {
 			this.coreDataPath = coreDataPath;
 		}
+	}
+
+	public List<String> getProblems() {
+		return problems;
+	}
+
+	public String getCoreDataPath() {
+		return coreDataPath;
 	}
 
 	public List<HeisigItem> readCoreData() {
@@ -40,16 +50,30 @@ public class HesigDataReader {
 		FileInputStream fileInputStream = null;
 		DataInputStream dataInputStream = null;
 		try {
+			System.out.println("creating inputdata");
 			File inputData = new File(coreDataPath);
-			assert inputData.exists();
+			System.out.println("Created input data.");
+			if (inputData.exists() == false) {
+				System.out.println("maybe we are in a jar file...");
+				InputStream is = getClass().getResourceAsStream(
+						"/ehe/insig/data/heisig-data.csv");
+				System.out.println("go input stream" + is);
+				dataInputStream = new DataInputStream(is);
+				System.out.println("got data input stream." + dataInputStream);
+//				System.out.println("Could not find the file path: \nAbsolute: "
+//						+ inputData.getAbsolutePath() + "\ngetCanonicalPath: "
+//						+ inputData.getCanonicalPath() + "\ngetName: "
+//						+ inputData.getName());
+//				return null;
+			} else {
+				fileInputStream = new FileInputStream(coreDataPath);
+				dataInputStream = new DataInputStream(fileInputStream);
 
-			// Open the file that is the first
-			// command line parameter
-			fileInputStream = new FileInputStream(coreDataPath);
+			}
+			System.out.println("Checked existance...");
 			// Get the object of DataInputStream
-			dataInputStream = new DataInputStream(fileInputStream);
 			BufferedReader bufferedReader = new BufferedReader(
-					new InputStreamReader(dataInputStream));
+					new InputStreamReader(dataInputStream, Charset.forName("UTF-8")));
 			String line;
 			kanji = new ArrayList<HeisigItem>();
 
@@ -67,7 +91,7 @@ public class HesigDataReader {
 			problems
 					.add("There was a problem that I don't know what to do with. Here are some details that may or may not be useful; "
 							+ e.toString());
-			System.err.println("There was a problem!");
+			System.err.println("There was a problem! \n" + e.toString());
 		} finally {
 			if (fileInputStream != null) {
 				try {
@@ -140,14 +164,14 @@ public class HesigDataReader {
 		entry = entries[3];
 		entry = stripLeadingAndTrailingQuotationMark(entry);
 		keywordVersion4 = entry;
-		
+
 		// /////////////////////////////////
 		// 5th edition key word
 		// /////////////////////////////////
 		entry = entries[4];
 		entry = stripLeadingAndTrailingQuotationMark(entry);
 		keywordVersion5 = entry;
-		
+
 		// /////////////////////////////////
 		// Stroke count
 		// /////////////////////////////////
@@ -195,7 +219,8 @@ public class HesigDataReader {
 							+ e.toString());
 			return null;
 		}
-		heisigItem = new HeisigItem(heisigIndex, kanji, kanjiStrokeCount,indexOrdinal, lessonNumber);
+		heisigItem = new HeisigItem(heisigIndex, kanji, kanjiStrokeCount,
+				indexOrdinal, lessonNumber);
 		heisigItem.addOrReplaceKeyword(3, keywordVersion3);
 		heisigItem.addOrReplaceKeyword(4, keywordVersion4);
 		heisigItem.addOrReplaceKeyword(5, keywordVersion5);

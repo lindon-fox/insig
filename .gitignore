@@ -2,3 +2,6 @@
 bin/
 lib/
 output/
+#specific files
+Insig_fat.jar
+Insig.jar
