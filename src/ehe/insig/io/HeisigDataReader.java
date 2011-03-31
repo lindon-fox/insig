@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import ehe.insig.dataModel.HeisigItem;
 
@@ -53,7 +52,8 @@ public class HeisigDataReader {
 	 * @param pathIn
 	 * @param pathOut
 	 */
-	public List<HeisigItem> readListFormatCoreData(String pathIn, String resourcePathIn) {
+	public List<HeisigItem> readListFormatCoreData(String pathIn,
+			String resourcePathIn) {
 		List<HeisigItem> kanjiList = null;
 		DataInputStream dataInputStream = null;
 		try {
@@ -84,25 +84,25 @@ public class HeisigDataReader {
 				line = bufferedReader.readLine();
 				String keyword = line;
 				line = bufferedReader.readLine();
-				String parts =line;
+				String primitives = line;
 				line = bufferedReader.readLine();
 				String rank = line;
 				HeisigItem item = new HeisigItem(frame, kanji, -1, -1, -1);
 				item.addOrReplaceKeyword(-1, keyword);
-				try{
-				item.setKanjiRanking(Integer.parseInt(rank));
-			}
-				catch(NumberFormatException nfe){
-					System.err.println("The rank was expected as a number; " + rank);
+				try {
+					item.setKanjiRanking(Integer.parseInt(rank));
+				} catch (NumberFormatException nfe) {
+					System.err.println("The rank was expected as a number; "
+							+ rank);
 				}
-				StringTokenizer stringTokenizer = new StringTokenizer(parts," , ");
-				while ( stringTokenizer.hasMoreTokens() )
-				{
-				  String token = (String)stringTokenizer.nextToken();
-				  item.addKanjiPart(token);
+
+				String[] tokens = primitives.split(", ");
+				for (int i = 0; i < tokens.length; i++) {
+					String token = tokens[i];
+					item.addKanjiPart(token);
 				}
 				kanjiList.add(item);
-				
+
 			}
 
 		} catch (FileNotFoundException e) {
@@ -168,6 +168,7 @@ public class HeisigDataReader {
 
 	/**
 	 * gets the input stream for the core data.
+	 * 
 	 * @return
 	 * @throws FileNotFoundException
 	 */

@@ -1,13 +1,17 @@
 package ehe.insig;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import ehe.insig.dataModel.HeisigItem;
+import ehe.insig.dataModel.HeisigItemMerge;
 import ehe.insig.io.HTMLKanjiDetailsGenerator;
 import ehe.insig.io.HeisigDataReader;
 import ehe.insig.io.HeisigDataWriter;
@@ -34,17 +38,39 @@ public class HesigView {
 
 				//test
 				
-				
-				
 				List<HeisigItem> tempList = hesigDataReader.readListFormatCoreData("/Users/" + System.getProperty("user.name") + "/Documents/Japanese/Kanji with primitives.txt", "");
+
+				if(tempList.size() == kanji.size()){
+					System.out.println("both the sizes are equal");
+				}
+				else{
+					System.err.println("Sizes are not equal: " + tempList.size() + " vs " + kanji.size());
+				}
+				
+				HashMap<String, HeisigItem> kanjiMap = new HashMap<String, HeisigItem>();
+				for (HeisigItem item : kanji) {
+					kanjiMap.put(item.getHeisigIndex(), item);
+				}
+				List<HeisigItem> mergedItems = new  ArrayList<HeisigItem>();
+				for (HeisigItem item : tempList) {
+					HeisigItem mergedItem = HeisigItemMerge.merge(kanjiMap.get(item.getHeisigIndex()), item);
+					mergedItems.add(mergedItem);
+					System.out.println(mergedItem.toString());
+				}
+				
+				
 				
 				HeisigDataWriter heisigDataWriter = new HeisigDataWriter();
+//				heisigDataWriter.writeHeisigData("./output/test.csv", tempList);
 				try {
 					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare.csv", tempList);
+					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare original.csv", 
+							kanji);
+					
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 				
 				
 				if (kanji == null) {

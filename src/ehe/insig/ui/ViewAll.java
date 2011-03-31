@@ -547,7 +547,7 @@ public class ViewAll extends javax.swing.JFrame {
 		detailsHeisigNumberLabel.setText("(#" + item.getHeisigIndex() + ")");
 		detailsHeisigNumberLabel.setToolTipText("Lesson number: "
 				+ item.getLessonNumber());
-		detailsKeywordLabel.setText(item.getKeywords());
+		detailsKeywordLabel.setText(item.getKeywordsFormatted());
 		detailsKanjiLabel.setText(item.getKanji());
 		detailsMainContentHeadingPanel.validate();
 		detailsStrokeCountLabel.setText("[ " + item.getKanjiStrokeCount()

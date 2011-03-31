@@ -141,7 +141,7 @@ public class HTMLKanjiDetailsGenerator {
 		xml.writeStartElement("td");
 		xml.writeAttribute("class", "keyword-heading-cell");
 		xml.writeStartElement("h1");
-		xml.writeCharacters(item.getKeywords());
+		xml.writeCharacters(item.getKeywordsFormatted());
 		xml.writeEndElement();//h1
 
 		xml.writeEndElement();//td

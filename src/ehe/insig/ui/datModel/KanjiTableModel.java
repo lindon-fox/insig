@@ -70,7 +70,7 @@ public class KanjiTableModel extends AbstractTableModel {
 			item = items.get(rowIndex).getHeisigIndex();
 			break;
 		case KanjiTableModel.KEYWORD_COLUMN_INDEX:
-			item = items.get(rowIndex).getKeywords();
+			item = items.get(rowIndex).getKeywordsFormatted();
 			break;
 		case STROKE_COUNT_COLUMN_INDEX:
 			item = items.get(rowIndex).getKanjiStrokeCount();
