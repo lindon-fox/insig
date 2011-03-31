@@ -88,7 +88,7 @@ public class HeisigDataReader {
 				line = bufferedReader.readLine();
 				String rank = line;
 				HeisigItem item = new HeisigItem(frame, kanji, -1, -1, -1);
-				item.addOrReplaceKeyword(-1, keyword);
+				item.addOrReplaceKeyword(2, keyword);//two is a guess - it may be wrong... I guessed three originally, but then some differences started showing up in the data sets - some of that could have just been human error, but then found some clear differences...
 				try {
 					item.setKanjiRanking(Integer.parseInt(rank));
 				} catch (NumberFormatException nfe) {

@@ -55,7 +55,7 @@ public class ViewAll extends javax.swing.JFrame {
 	private JTable dataTable;
 	private JTextField searchTextField;
 	private JPanel searchPanel;
-	private JPanel searchButton;
+	private JPanel searchButtonPanel;
 	private JToggleButton lessonNumberToggleButton;
 	private JToggleButton strokeCountToggleButton;
 	private JToggleButton keywordToggleButton;
@@ -124,17 +124,17 @@ public class ViewAll extends javax.swing.JFrame {
 					searchTextField.setFont(searchTextFieldFont);
 				}
 				{
-					searchButton = new JPanel();
+					searchButtonPanel = new JPanel();
 					FlowLayout searchButtonLayout = new FlowLayout();
 					searchButtonLayout.setAlignment(FlowLayout.LEFT);
 					searchButtonLayout.setHgap(1);
-					searchButton.setLayout(searchButtonLayout);
-					searchPanel.add(searchButton, BorderLayout.WEST);
-					searchButton.setPreferredSize(new java.awt.Dimension(418,
+					searchButtonPanel.setLayout(searchButtonLayout);
+					searchPanel.add(searchButtonPanel, BorderLayout.WEST);
+					searchButtonPanel.setPreferredSize(new java.awt.Dimension(418,
 							35));
 					{
 						kanjiToggleButton = new JToggleButton();
-						searchButton.add(kanjiToggleButton);
+						searchButtonPanel.add(kanjiToggleButton);
 						kanjiToggleButton.setName("kanjiToggleButton");
 						kanjiToggleButton
 								.addActionListener(new ActionListener() {
@@ -145,7 +145,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						indexToggleButton = new JToggleButton();
-						searchButton.add(indexToggleButton);
+						searchButtonPanel.add(indexToggleButton);
 						indexToggleButton.setName("indexToggleButton");
 						indexToggleButton
 								.addActionListener(new ActionListener() {
@@ -156,7 +156,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						keywordToggleButton = new JToggleButton();
-						searchButton.add(keywordToggleButton);
+						searchButtonPanel.add(keywordToggleButton);
 						keywordToggleButton.setName("keywordToggleButton");
 						keywordToggleButton
 								.addActionListener(new ActionListener() {
@@ -167,7 +167,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						strokeCountToggleButton = new JToggleButton();
-						searchButton.add(strokeCountToggleButton);
+						searchButtonPanel.add(strokeCountToggleButton);
 						strokeCountToggleButton
 								.setName("strokeCountToggleButton");
 						strokeCountToggleButton
@@ -179,7 +179,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						lessonNumberToggleButton = new JToggleButton();
-						searchButton.add(lessonNumberToggleButton);
+						searchButtonPanel.add(lessonNumberToggleButton);
 						lessonNumberToggleButton
 								.setName("lessonNumberToggleButton");
 						lessonNumberToggleButton
@@ -469,6 +469,7 @@ public class ViewAll extends javax.swing.JFrame {
 
 		List<RowFilter<Object, Object>> filters = new ArrayList<RowFilter<Object, Object>>();
 		for (String searchItem : searchItems) {
+			//TODO ignore CAPS...
 			//TODO o something about bad characters (like parenthasis) when passed in.
 			if (filterByAllFields) { // if we should search all of the fields
 				filters.add(RowFilter.regexFilter(searchItem));

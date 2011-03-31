@@ -13,7 +13,7 @@ public class HeisigItem {
 	protected int insigIndex = -1;
 	protected String kanji;
 	protected List<KeywordWithVersionsNumbers> keywords;//this lists all the keywords and their version numbers
-	
+
 	protected int kanjiStrokeCount = -1;
 	protected int indexOrdinal = -1; //not sure what this represents. Can't see how it relates to the index.
 	protected int lessonNumber = -1;
@@ -92,19 +92,19 @@ public class HeisigItem {
 				return;
 			}
 		}
-		KeywordWithVersionsNumbers newKeywordVersions = new KeywordWithVersionsNumbers(keyword,
-				version);
+		KeywordWithVersionsNumbers newKeywordVersions = new KeywordWithVersionsNumbers(
+				keyword, version);
 		keywords.add(newKeywordVersions);
 	}
 
 	public List<String> getKanjiPrimitiveList() {
 		return kanjiPrimitiveList;
 	}
-	
-	public List<KeywordWithVersionsNumbers> geKeywords(){
+
+	public List<KeywordWithVersionsNumbers> geKeywords() {
 		return keywords;
 	}
-	
+
 	public String getKeywordsFormatted() {
 		return getFormattedKeywords();
 	}
@@ -112,9 +112,9 @@ public class HeisigItem {
 	@Override
 	public String toString() {
 		return getKanji() + " = " + getFormattedKeywords() + " ("
-				+ kanjiPrimitivesToString() + ") - "
-				+ ",{ #" + getHeisigIndex()
-				+ "} [ " + getKanjiStrokeCount() + " ] <" + getLessonNumber() + "> R-" + getKanjiRanking();
+				+ kanjiPrimitivesToString() + ") - " + ",{ #"
+				+ getHeisigIndex() + "} [ " + getKanjiStrokeCount() + " ] <"
+				+ getLessonNumber() + "> R:" + getKanjiRanking();
 	}
 
 	public String kanjiPrimitivesToString() {
@@ -157,19 +157,24 @@ public class HeisigItem {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (KeywordWithVersionsNumbers keywordVersion : this.keywords) {
 			stringBuilder.append(keywordVersion.keyword);
-			stringBuilder.append(" (Ver");
+			stringBuilder.append(" (v");
+			boolean firstPass = true;
 			for (Integer versionNumber : keywordVersion.getVersions()) {
-				stringBuilder.append(", ");
+				if (firstPass == true) {
+					firstPass = false;
+				} else {
+					stringBuilder.append(", ");
+				}
 				stringBuilder.append(versionNumber);
 			}
 			stringBuilder.append("). ");
 		}
 		return stringBuilder.toString();
 	}
-	
+
 	/**
 	 * @author lindon-fox
-	 *
+	 * 
 	 */
 	class KeywordWithVersionsNumbers {
 
@@ -227,13 +232,13 @@ public class HeisigItem {
 		}
 		return stringBuilder.toString();
 	}
-	
-	
+
 	/**
-	 * @return a list of version numbers (relating to the books) that this item has a keyword for
+	 * @return a list of version numbers (relating to the books) that this item
+	 *         has a keyword for
 	 */
 	public List<Integer> getKeywordVersionNumbers() {
-		List<Integer> keywordVersionNumbers  = new ArrayList<Integer>();
+		List<Integer> keywordVersionNumbers = new ArrayList<Integer>();
 		for (KeywordWithVersionsNumbers keywordEntry : keywords) {
 			keywordVersionNumbers.addAll(keywordEntry.getVersions());
 		}
@@ -243,15 +248,15 @@ public class HeisigItem {
 	 * @param versionNumber
 	 * @return the keyword for the version number. Null if not found.
 	 */
-	public KeywordWithVersionsNumbers getKeywordForVersionNumber(Integer versionNumber) {
+	public KeywordWithVersionsNumbers getKeywordForVersionNumber(
+			Integer versionNumber) {
 		for (KeywordWithVersionsNumbers keywordEntry : keywords) {
-			if(keywordEntry.getVersions().contains(versionNumber)){
+			if (keywordEntry.getVersions().contains(versionNumber)) {
 				return keywordEntry;
 			}
 		}
 		//the keyword for the version number has not been found, so return null.
 		return null;
 	}
-
 
 }

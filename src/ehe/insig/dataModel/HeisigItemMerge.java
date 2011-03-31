@@ -68,7 +68,7 @@ public class HeisigItemMerge {
 		for (KeywordWithVersionsNumbers keyword : preferredKeywordList) {
 			keywords.add(keyword);
 		}
-		//add and remaing keywords and versions
+		//add the remaing keywords and versions
 		for (KeywordWithVersionsNumbers secondKeywordVersions : alternateKeywordList) {
 			String compareKeyword = secondKeywordVersions.getKeyword();
 			boolean containsKeyword = false;
@@ -139,7 +139,7 @@ public class HeisigItemMerge {
 						alternateKeywordWithVersionsNumbers.getKeyword())) {
 					System.err.println("There was a clash with the keywords ("
 							+ firstItem
-									.getKeywordForVersionNumber(versionNumber)
+									.getKeywordForVersionNumber(versionNumber).getKeyword()
 							+ ") for a version number: " + versionNumber);
 				}
 			}
