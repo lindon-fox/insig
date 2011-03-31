@@ -10,14 +10,14 @@ import java.util.List;
  */
 public class HeisigItem {
 	protected String heisigIndex;
-	protected int insigIndex;
+	protected int insigIndex = -1;
 	protected String kanji;
 	protected List<KeywordWithVersionsNumbers> keywords;//this lists all the keywords and their version numbers
 	
-	protected int kanjiStrokeCount;
-	protected int indexOrdinal; //not sure what this represents. Can't see how it relates to the index.
-	protected int lessonNumber;
-	protected int kanjiRanking;
+	protected int kanjiStrokeCount = -1;
+	protected int indexOrdinal = -1; //not sure what this represents. Can't see how it relates to the index.
+	protected int lessonNumber = -1;
+	protected int kanjiRanking = -1;
 	protected List<String> kanjiPrimitiveList;
 
 	public HeisigItem(String heisigIndex, String kanji, int kanjiStrokeCount,
@@ -112,9 +112,9 @@ public class HeisigItem {
 	@Override
 	public String toString() {
 		return getKanji() + " = " + getFormattedKeywords() + " ("
-				+ kanjiPrimitivesToString() + ") - #" + getKanjiRanking()
-				+ ", [ " + getKanjiStrokeCount() + " ] {" + getHeisigIndex()
-				+ "} <" + getLessonNumber() + ">";
+				+ kanjiPrimitivesToString() + ") - "
+				+ ",{ #" + getHeisigIndex()
+				+ "} [ " + getKanjiStrokeCount() + " ] <" + getLessonNumber() + "> R-" + getKanjiRanking();
 	}
 
 	public String kanjiPrimitivesToString() {

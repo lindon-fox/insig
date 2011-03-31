@@ -42,13 +42,13 @@ public class HeisigItemMerge {
 		int indexOrdinal;
 		int kanjiRanking;
 		int kanjiStrokeCount;
-		lessonNumber = mergeNonCriticalProperty(preferedItem.getLessonNumber(),
+		lessonNumber = mergeNonCriticalProperty("lesson number", preferedItem.getLessonNumber(),
 				alternateItem.getLessonNumber());
-		indexOrdinal = mergeNonCriticalProperty(preferedItem.getIndexOrdinal(),
+		indexOrdinal = mergeNonCriticalProperty("index ordinal", preferedItem.getIndexOrdinal(),
 				alternateItem.getIndexOrdinal());
-		kanjiRanking = mergeNonCriticalProperty(preferedItem.getKanjiRanking(),
+		kanjiRanking = mergeNonCriticalProperty("kanji ranking" , preferedItem.getKanjiRanking(),
 				alternateItem.getKanjiRanking());
-		kanjiStrokeCount = mergeNonCriticalProperty(preferedItem
+		kanjiStrokeCount = mergeNonCriticalProperty("kanji stroke count", preferedItem
 				.getKanjiStrokeCount(), alternateItem.getKanjiStrokeCount());
 		//next do the difficult ones...
 		//the keywords and the primitives
@@ -95,10 +95,28 @@ public class HeisigItemMerge {
 		//check for clashes between the two mergeing lists...
 		compareListForVersionClashes(preferedItem, alternateItem);
 
+		//now add the primitives from the prefered list
 		for (String primitive : preferedPrimitiveList) {
 			primitives.add(primitive);
 		}
+		//now add the primitive from the alternate list, if they don't already exist
+		for (String primitive : alternatePrimitiveList) {
+			if(primitives.contains(primitive) == false){
+				primitives.add(primitive);
+			}
+		}
 
+		mergedItem = new HeisigItem(heisigIndex, kanji, kanjiStrokeCount, indexOrdinal, lessonNumber);
+		mergedItem.setKanjiRanking(kanjiRanking);
+		for (String primitive : primitives) {
+			mergedItem.addKanjiPart(primitive);
+		}
+		for (KeywordWithVersionsNumbers keywordWithVersionsNumbers : keywords) {
+			String keyword = keywordWithVersionsNumbers.getKeyword();
+			for (Integer version : keywordWithVersionsNumbers.getVersions()) {
+				mergedItem.addOrReplaceKeyword(version, keyword);
+			}
+		}
 		return mergedItem;
 	}
 	
@@ -127,7 +145,7 @@ public class HeisigItemMerge {
 			}
 		}
 	}
-	private static int mergeNonCriticalProperty(int preferedPropertyValue,
+	private static int mergeNonCriticalProperty(String propertyName, int preferedPropertyValue,
 			int secondPropertyValue) {
 		int propertyValue = -1;
 		if (preferedPropertyValue == secondPropertyValue) {
@@ -138,7 +156,7 @@ public class HeisigItemMerge {
 			propertyValue = preferedPropertyValue;
 		} else {
 			//worth reporting... later
-			System.out.println("unresolvable disparity with the properties: "
+			System.out.println("unresolvable disparity with the properties ("+propertyName+"): "
 					+ preferedPropertyValue + " vs " + secondPropertyValue);
 			propertyValue = preferedPropertyValue;
 		}
