@@ -24,10 +24,10 @@ public class HeisigData {
 					return "" + heisigItem.getIndexOrdinal();
 				case STROKE_COUNT :
 					return "" + heisigItem.getKanjiStrokeCount();
-				case KANI_PRIMITIVES :
+				case KEY_WORDS :
 					return heisigItem
 							.keywordsToString(HeisigData.INNER_SEPERATOR);
-				case KEY_WORDS :
+				case KANI_PRIMITIVES :
 					return heisigItem
 							.kanjiPrimitivesToString(HeisigData.INNER_SEPERATOR);
 				case KANJI :

@@ -63,9 +63,12 @@ public class HesigView {
 				HeisigDataWriter heisigDataWriter = new HeisigDataWriter();
 //				heisigDataWriter.writeHeisigData("./output/test.csv", tempList);
 				try {
-					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare.csv", tempList);
+					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare list.csv", tempList);
 					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare original.csv", 
 							kanji);
+					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare merged.csv", 
+							mergedItems);
+					next step is to be able to read this file in...
 					
 				} catch (IOException e) {
 					e.printStackTrace();

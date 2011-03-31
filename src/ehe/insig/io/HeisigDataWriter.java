@@ -95,20 +95,6 @@ public class HeisigDataWriter {
 			generateValue(ColumnDefinition.getValueForField(heisigItem,
 					columnDefinition), stringBuilder);
 		}
-
-//		generateValue(heisigItem.getHeisigIndex(), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.getKanji(), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.keywordsToString("~"), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.kanjiPrimitivesToString("~"), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.getKanjiStrokeCount(), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.getIndexOrdinal(), stringBuilder);
-//		stringBuilder.append(HeisigData.SEPERATOR);
-//		generateValue(heisigItem.getLessonNumber(), stringBuilder);
 		return stringBuilder.toString();
 	}
 
