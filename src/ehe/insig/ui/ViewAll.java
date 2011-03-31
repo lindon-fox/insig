@@ -549,7 +549,7 @@ public class ViewAll extends javax.swing.JFrame {
 				+ item.getLessonNumber());
 		detailsKeywordLabel.setText(item.getKeywordsFormatted());
 		detailsKanjiLabel.setText(item.getKanji());
-		detailsMainContentHeadingPanel.validate();
+		detailsScrollPanel.validate(); // this is to make sure that the new text does not make the UI 'funny'.
 		detailsStrokeCountLabel.setText("[ " + item.getKanjiStrokeCount()
 				+ " ]");
 	}
