@@ -2,18 +2,21 @@ package ehe.insig.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,9 +31,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
-import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -87,7 +90,7 @@ public class ViewAll extends javax.swing.JFrame {
 	private JTextField detailsKanjiLabel;
 	private JPanel detailsMainContentPanel;
 	private JPanel detailsKanjiContentPanel;
-	private JPanel detailsScrollPane;
+	private JPanel detailsPanel;
 	private JSplitPane summaryAndDetailsSplitPanel;
 	private JPanel relativesPanel;
 	private JTextArea relativesTextArea;
@@ -101,7 +104,38 @@ public class ViewAll extends javax.swing.JFrame {
 		filterByAllFields = true;
 		filterIndicies = new ArrayList<Integer>();
 		initGUI();
+		detailsKanjiLabel.setText("");
+		detailsStrokeCountLabel.setText("");
+		detailsHeisigNumberLabel.setText("");
+		detailsKeywordLabel.setText("");
+		detailsStoryTextArea.setText("");
+		detailsPrimitiveTextArea.setText("");
+		checkClipboard();
 		searchTextField.requestFocus();
+	}
+
+	private void checkClipboard() {
+		Transferable contents = Toolkit.getDefaultToolkit()
+				.getSystemClipboard().getContents(this);
+		boolean hasTransferableText = (contents != null)
+				&& contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+		if (hasTransferableText) {
+			try {
+				searchTextField.setText((String) contents
+						.getTransferData(DataFlavor.stringFlavor));
+				updateFilter();
+				if(tableRowSorter.getViewRowCount() > 0){
+					dataTable.setRowSelectionInterval(0, 0);
+				}
+			} catch (UnsupportedFlavorException ex) {
+				//highly unlikely since we are using a standard DataFlavor two
+				System.out.println(ex);
+				ex.printStackTrace();
+			} catch (IOException ex) {
+				System.out.println(ex);
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	private void initGUI() {
@@ -123,14 +157,15 @@ public class ViewAll extends javax.swing.JFrame {
 					searchTextField = new JTextField();
 					searchPanel.add(searchTextField, BorderLayout.CENTER);
 					searchTextField.setName("searchTextField");
-					searchTextField.setPreferredSize(new java.awt.Dimension(401, 35));
+					searchTextField.setToolTipText("enter search items");
+					searchTextField.setPreferredSize(new java.awt.Dimension(
+							401, 35));
 					searchTextField.addKeyListener(new KeyAdapter() {
 						public void keyReleased(KeyEvent evt) {
 							searchTextFieldKeyReleased(evt);
 						}
 					});
 
-					System.out.println(searchTextField.getFont().getName());
 					searchTextField.setFont(searchTextFieldFont);
 				}
 				{
@@ -140,12 +175,15 @@ public class ViewAll extends javax.swing.JFrame {
 					searchButtonLayout.setHgap(1);
 					searchButtonPanel.setLayout(searchButtonLayout);
 					searchPanel.add(searchButtonPanel, BorderLayout.WEST);
-					searchButtonPanel.setPreferredSize(new java.awt.Dimension(501, 35));
+					searchButtonPanel.setPreferredSize(new java.awt.Dimension(
+							501, 35));
 					{
 						kanjiToggleButton = new JToggleButton();
-//						kanjiToggleButton.setBorder(BorderFactory.createLineBorder(Color.BLACK)); TODO make the buttons a bit nicer...
+						//						kanjiToggleButton.setBorder(BorderFactory.createLineBorder(Color.BLACK)); TODO make the buttons a bit nicer...
 						searchButtonPanel.add(kanjiToggleButton);
 						kanjiToggleButton.setName("kanjiToggleButton");
+						kanjiToggleButton
+								.setToolTipText("add or remove filter by kanji");
 						kanjiToggleButton
 								.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent evt) {
@@ -158,6 +196,8 @@ public class ViewAll extends javax.swing.JFrame {
 						searchButtonPanel.add(indexToggleButton);
 						indexToggleButton.setName("indexToggleButton");
 						indexToggleButton
+								.setToolTipText("add or remove filter by heisig index");
+						indexToggleButton
 								.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent evt) {
 										indexToggleButtonActionPerformed(evt);
@@ -169,6 +209,8 @@ public class ViewAll extends javax.swing.JFrame {
 						searchButtonPanel.add(keywordToggleButton);
 						keywordToggleButton.setName("keywordToggleButton");
 						keywordToggleButton
+								.setToolTipText("add or remove filter by keyword");
+						keywordToggleButton
 								.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent evt) {
 										keywordToggleButtonActionPerformed(evt);
@@ -178,12 +220,16 @@ public class ViewAll extends javax.swing.JFrame {
 					{
 						primitivesToggleButton = new JToggleButton();
 						searchButtonPanel.add(primitivesToggleButton);
-						primitivesToggleButton.setName("primitivesToggleButton");
-						primitivesToggleButton.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent evt) {
-								primitivesToggleButtonActionPerformed(evt);
-							}
-						});
+						primitivesToggleButton
+								.setName("primitivesToggleButton");
+						primitivesToggleButton
+								.setToolTipText("add or remove filter by primitives");
+						primitivesToggleButton
+								.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent evt) {
+										primitivesToggleButtonActionPerformed(evt);
+									}
+								});
 
 					}
 					{
@@ -191,17 +237,22 @@ public class ViewAll extends javax.swing.JFrame {
 						searchButtonPanel.add(strokeCountToggleButton);
 						strokeCountToggleButton
 								.setName("strokeCountToggleButton");
-						strokeCountToggleButton.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent evt) {
-								strokeCountToggleButtonActionPerformed(evt);
-							}
-						});
+						strokeCountToggleButton
+								.setToolTipText("add or remove filter by stroke count");
+						strokeCountToggleButton
+								.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent evt) {
+										strokeCountToggleButtonActionPerformed(evt);
+									}
+								});
 					}
 					{
 						lessonNumberToggleButton = new JToggleButton();
 						searchButtonPanel.add(lessonNumberToggleButton);
 						lessonNumberToggleButton
 								.setName("lessonNumberToggleButton");
+						lessonNumberToggleButton
+								.setToolTipText("add or remove filter by lesson number");
 						lessonNumberToggleButton
 								.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent evt) {
@@ -242,7 +293,8 @@ public class ViewAll extends javax.swing.JFrame {
 			//////////////////////////////////////////////////////////
 			{
 				mainScrollPanel = new JScrollPane();
-				mainScrollPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+				mainScrollPanel.setBorder(new LineBorder(new java.awt.Color(
+						153, 153, 153), 1, false));
 				{
 					dataTable = new JTable();
 					mainScrollPanel.setViewportView(dataTable);
@@ -270,18 +322,18 @@ public class ViewAll extends javax.swing.JFrame {
 								@Override
 								public void valueChanged(ListSelectionEvent e) {
 									int viewRow = dataTable.getSelectedRow();
-									System.out.println("View row: " + viewRow);
 									if (viewRow < 0) {
 										//selection got filtered away...
 										//do nothing atm, but something in the future...
 									} else {
 										int modelRow = dataTable
 												.convertRowIndexToModel(viewRow);
-										String heisigIndex = (String) dataTable
+										Integer heisigIndex = (Integer) dataTable
 												.getModel()
 												.getValueAt(
 														modelRow,
-														KanjiTableModel.ColumnModel.heisigIndex.getIndex());
+														KanjiTableModel.ColumnModel.heisigIndex
+																.getIndex());
 										setDetails(heisigIndex);
 									}
 								}
@@ -298,9 +350,16 @@ public class ViewAll extends javax.swing.JFrame {
 							return 0;
 						}
 					};
-					tableRowSorter.setComparator(1, intComparator);// TODO need to make this more generic
-					tableRowSorter.setComparator(3, intComparator);// TODO need to make this more generic
-					tableRowSorter.setComparator(4, intComparator);// TODO need to make this more generic
+					tableRowSorter.setComparator(
+							KanjiTableModel.ColumnModel.heisigIndex.getIndex(),
+							intComparator);
+					tableRowSorter.setComparator(
+							KanjiTableModel.ColumnModel.strokeCount.getIndex(),
+							intComparator);
+					tableRowSorter
+							.setComparator(
+									KanjiTableModel.ColumnModel.lessonNumber
+											.getIndex(), intComparator);
 
 					//setting the columns
 					TableColumnModel tableColumnModel = dataTable
@@ -320,7 +379,10 @@ public class ViewAll extends javax.swing.JFrame {
 						}
 					}
 					for (int i = 0; i < tableColumnModel.getColumnCount(); i++) {
-						if (i != KanjiTableModel.ColumnModel.keywords.getIndex() && i != KanjiTableModel.ColumnModel.primitives.getIndex()) {
+						if (i != KanjiTableModel.ColumnModel.keywords
+								.getIndex()
+								&& i != KanjiTableModel.ColumnModel.primitives
+										.getIndex()) {
 							tableColumnModel.getColumn(i).setPreferredWidth(25);
 						} else {
 							tableColumnModel.getColumn(i)
@@ -338,13 +400,15 @@ public class ViewAll extends javax.swing.JFrame {
 					};
 					//					tableCellRenderer.setFont(customFont);
 					column = tableColumnModel
-							.getColumn(KanjiTableModel.ColumnModel.kanji.getIndex());
+							.getColumn(KanjiTableModel.ColumnModel.kanji
+									.getIndex());
 					column.setCellRenderer(tableKanjiCellRenderer);
 				}
 			}
 			{
 				detailsScrollPanel = new JScrollPane();
-				detailsScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				detailsScrollPanel
+						.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 				detailsScrollPanel.setPreferredSize(new java.awt.Dimension(489,
 						329));
 				detailsScrollPanel.setBackground(null);
@@ -354,25 +418,28 @@ public class ViewAll extends javax.swing.JFrame {
 			// The split panel that holds the results and details
 			//////////////////////////////////////////////////////////
 			summaryAndDetailsSplitPanel = new JSplitPane(
-					JSplitPane.VERTICAL_SPLIT, mainScrollPanel,
-					detailsScrollPane);
-			summaryAndDetailsSplitPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+					JSplitPane.VERTICAL_SPLIT, mainScrollPanel, detailsPanel);
+			summaryAndDetailsSplitPanel.setBorder(BorderFactory
+					.createEmptyBorder(0, 0, 0, 0));
+			summaryAndDetailsSplitPanel.setOneTouchExpandable(true);
+			summaryAndDetailsSplitPanel.setContinuousLayout(true);
 			summaryAndDetailsSplitPanel.add(detailsScrollPanel,
 					JSplitPane.RIGHT);
 			detailsScrollPanel.setName("detailsScrollPanel");
-			detailsScrollPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+			detailsScrollPanel.setBorder(new LineBorder(new java.awt.Color(153,
+					153, 153), 1, false));
 			{
-				detailsScrollPane = new JPanel();
-				detailsScrollPanel.setViewportView(detailsScrollPane);
+				detailsPanel = new JPanel();
+				detailsScrollPanel.setViewportView(detailsPanel);
 				BorderLayout detailsScrollPaneLayout = new BorderLayout();
-				detailsScrollPane.setLayout(detailsScrollPaneLayout);
+				detailsPanel.setLayout(detailsScrollPaneLayout);
 				{
 					detailsKanjiContentPanel = new JPanel();
 					detailsKanjiContentPanel.setBackground(Color.WHITE);
 					BorderLayout detailsKanjiContentPanelLayout = new BorderLayout();
 					detailsKanjiContentPanel
 							.setLayout(detailsKanjiContentPanelLayout);
-					detailsScrollPane.add(detailsKanjiContentPanel,
+					detailsPanel.add(detailsKanjiContentPanel,
 							BorderLayout.WEST);
 					{
 						detailsStrokeAndKanjiPanel = new JPanel();
@@ -417,7 +484,7 @@ public class ViewAll extends javax.swing.JFrame {
 					BorderLayout detailsMainContentPanelLayout = new BorderLayout();
 					detailsMainContentPanel
 							.setLayout(detailsMainContentPanelLayout);
-					detailsScrollPane.add(detailsMainContentPanel,
+					detailsPanel.add(detailsMainContentPanel,
 							BorderLayout.CENTER);
 					{
 						detailsMainContentHeadingPanel = new JPanel();
@@ -452,46 +519,66 @@ public class ViewAll extends javax.swing.JFrame {
 							detailsHeisigNumberLabel.setForeground(Color.GRAY);
 							detailsHeisigNumberLabel
 									.setName("detailsHeisigNumberLabel");
-							detailsHeisigNumberLabel.setToolTipText("heisig index");
+							detailsHeisigNumberLabel
+									.setToolTipText("heisig index");
 						}
 					}
 					{
 						detailsMainContentBodyPanel = new JPanel();
 						BorderLayout detailsMainContentBodyPanelLayout = new BorderLayout();
-						detailsMainContentPanel.add(detailsMainContentBodyPanel, BorderLayout.CENTER);
-						detailsMainContentBodyPanel.setLayout(detailsMainContentBodyPanelLayout);
+						detailsMainContentPanel.add(
+								detailsMainContentBodyPanel,
+								BorderLayout.CENTER);
+						detailsMainContentBodyPanel
+								.setLayout(detailsMainContentBodyPanelLayout);
 						{
 							jScrollPane1 = new JScrollPane();
-							detailsMainContentBodyPanel.add(jScrollPane1, BorderLayout.CENTER);
-							jScrollPane1.setPreferredSize(new java.awt.Dimension(300,150));
-							jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-							jScrollPane1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-//							jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+							detailsMainContentBodyPanel.add(jScrollPane1,
+									BorderLayout.CENTER);
+							jScrollPane1
+									.setPreferredSize(new java.awt.Dimension(
+											300, 150));
+							jScrollPane1
+									.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+							jScrollPane1.setBorder(BorderFactory
+									.createEmptyBorder(0, 0, 0, 0));
+							//							jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 							{
 								detailsStoryTextArea = new JTextArea();
-								jScrollPane1.setViewportView(detailsStoryTextArea);
+								jScrollPane1
+										.setViewportView(detailsStoryTextArea);
 								detailsStoryTextArea.setLineWrap(true);
 								detailsStoryTextArea.setWrapStyleWord(true);
 								detailsStoryTextArea.setFont(romanFont);
-								detailsStoryTextArea.setForeground(Color.DARK_GRAY);
-								detailsStoryTextArea.setName("detailsStoryTextArea");
+								detailsStoryTextArea
+										.setForeground(Color.DARK_GRAY);
+								detailsStoryTextArea
+										.setName("detailsStoryTextArea");
 								detailsStoryTextArea.setToolTipText("story");
 							}
 						}
 						{
 							detailsPrimitiveTextArea = new JTextPane();
 							Font detailsPrimitiveFont = new Font(romanFont
-									.getName(), romanFont.getStyle(), 25);
-							StyledDocument doc = detailsPrimitiveTextArea.getStyledDocument();
+									.getName(), romanFont.getStyle(), 30);
+							StyledDocument doc = detailsPrimitiveTextArea
+									.getStyledDocument();
 							SimpleAttributeSet right = new SimpleAttributeSet();
-							StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-							doc.setParagraphAttributes(0, doc.getLength(), right, false);
+							StyleConstants.setAlignment(right,
+									StyleConstants.ALIGN_RIGHT);
+							doc.setParagraphAttributes(0, doc.getLength(),
+									right, false);
 
-							detailsPrimitiveTextArea.setFont(detailsPrimitiveFont);
+							detailsPrimitiveTextArea
+									.setFont(detailsPrimitiveFont);
 							detailsPrimitiveTextArea.setForeground(Color.GRAY);
-							detailsMainContentBodyPanel.add(detailsPrimitiveTextArea, BorderLayout.EAST);
-							detailsPrimitiveTextArea.setName("detailsPrimitiveTextArea");
-							detailsPrimitiveTextArea.setToolTipText("primitive(s)");
+							detailsMainContentBodyPanel
+									.add(detailsPrimitiveTextArea,
+											BorderLayout.EAST);
+							detailsPrimitiveTextArea
+									.setName("detailsPrimitiveTextArea");
+							detailsPrimitiveTextArea
+									.setToolTipText("primitive(s)");
 						}
 					}
 				}
@@ -500,7 +587,10 @@ public class ViewAll extends javax.swing.JFrame {
 			// The main split panel with the relos on the RHS and the others on the left
 			//////////////////////////////////////////////////////////
 			{
-				getContentPane().add(summaryAndDetailsSplitPanel, BorderLayout.CENTER);
+				getContentPane().add(summaryAndDetailsSplitPanel,
+						BorderLayout.CENTER);
+				summaryAndDetailsSplitPanel
+						.setName("summaryAndDetailsSplitPanel");
 			}
 			Application.getInstance().getContext().getResourceMap(getClass())
 					.injectComponents(getContentPane());
@@ -545,6 +635,7 @@ public class ViewAll extends javax.swing.JFrame {
 		// RowFilter<KanjiTableModel, Object> rowFilter = RowFilter
 		// .regexFilter(searchText);
 		tableRowSorter.setRowFilter(rowFilter);
+		
 		searchTextField.requestFocus();
 	}
 
@@ -557,32 +648,32 @@ public class ViewAll extends javax.swing.JFrame {
 	}
 
 	private void indexToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.heisigIndex.getIndex(),
-				indexToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.heisigIndex
+				.getIndex(), indexToggleButton);
 	}
 
 	private void kanjiToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.kanji.getIndex(),
-				kanjiToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.kanji
+				.getIndex(), kanjiToggleButton);
 	}
 
 	private void keywordToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.keywords.getIndex(),
-				keywordToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.keywords
+				.getIndex(), keywordToggleButton);
 	}
 
 	private void strokeCountToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.strokeCount.getIndex(),
-				strokeCountToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.strokeCount
+				.getIndex(), strokeCountToggleButton);
 	}
 
 	private void lessonNumberToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.lessonNumber.getIndex(),
-				lessonNumberToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.lessonNumber
+				.getIndex(), lessonNumberToggleButton);
 	}
 	private void primitivesToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.primitives.getIndex(),
-				primitivesToggleButton);
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.primitives
+				.getIndex(), primitivesToggleButton);
 	}
 
 	private void toggleButtonActionPerformed(Integer columnIndex,
@@ -610,20 +701,26 @@ public class ViewAll extends javax.swing.JFrame {
 				|| primitivesToggleButton.isSelected();
 	}
 
-	private void setDetails(String heisigIndex) {
+	private void setDetails(Integer heisigIndex) {
 		HeisigItem item = kanjiTableModel.get(heisigIndex);
 		detailsHeisigNumberLabel.setText("(#" + item.getHeisigIndex() + ")");
-		detailsKeywordLabel.setText(item.getKeywordsFormatted());
+		detailsKeywordLabel.setText(item.getKeywordsFormattedSimply());
+		if (item.hasMultipleKeywordVersions()) {
+			detailsKeywordLabel.setToolTipText("keyword, multiple versions: "
+					+ item.getKeywordsFormatted());
+		} else {
+			detailsKeywordLabel.setToolTipText("keyword: "
+					+ item.getKeywordsFormatted());
+		}
 		detailsKanjiLabel.setText(item.getKanji());
 		detailsStrokeCountLabel.setText("[ " + item.getKanjiStrokeCount()
 				+ " ]");
 		StringBuilder stringBuilder = new StringBuilder();
 		boolean firstPass = true;
 		for (String primitive : item.getKanjiPrimitiveList()) {
-			if(firstPass == true){
+			if (firstPass == true) {
 				firstPass = false;
-			}
-			else{
+			} else {
 				stringBuilder.append("\n");
 			}
 			stringBuilder.append(primitive);
@@ -632,6 +729,5 @@ public class ViewAll extends javax.swing.JFrame {
 		detailsStoryTextArea.setText(item.getStory());
 		this.validate(); // this is to make sure that the new text does not make the UI 'funny'.
 	}
-	
 
 }

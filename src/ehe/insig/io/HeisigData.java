@@ -33,7 +33,7 @@ public class HeisigData {
 				case KANJI :
 					return heisigItem.getKanji();
 				case HEISIG_INDEX :
-					return heisigItem.getHeisigIndex();
+					return "" + heisigItem.getHeisigIndex();
 			}
 			throw new AssertionError("Unknown column definition: "
 					+ columnDefinition);

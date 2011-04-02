@@ -9,7 +9,7 @@ import java.util.List;
  *         multiple versions of heisig. -done 2. add the primitive elements.
  */
 public class HeisigItem {
-	protected String heisigIndex;
+	protected int heisigIndex;
 	protected int insigIndex = -1;
 	protected String kanji;
 	protected List<KeywordWithVersionsNumbers> keywords;//this lists all the keywords and their version numbers
@@ -20,7 +20,7 @@ public class HeisigItem {
 	protected int kanjiRanking = -1;
 	protected List<String> kanjiPrimitiveList;
 
-	public HeisigItem(String heisigIndex, String kanji, int kanjiStrokeCount,
+	public HeisigItem(int heisigIndex, String kanji, int kanjiStrokeCount,
 			int indexOrdinal, int lessonNumber) {
 		super();
 		this.heisigIndex = heisigIndex;
@@ -31,10 +31,10 @@ public class HeisigItem {
 		this.keywords = new ArrayList<KeywordWithVersionsNumbers>();
 		this.kanjiPrimitiveList = new ArrayList<String>();
 	}
-	public String getHeisigIndex() {
+	public int getHeisigIndex() {
 		return heisigIndex;
 	}
-	public void setHeisigIndex(String heisigNumber) {
+	public void setHeisigIndex(int heisigNumber) {
 		this.heisigIndex = heisigNumber;
 	}
 	public int getInsigIndex() {
@@ -276,6 +276,23 @@ public class HeisigItem {
 		}
 		//the keyword for the version number has not been found, so return null.
 		return null;
+	}
+	public String getKeywordsFormattedSimply() {
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean firstPass = true;
+		for (KeywordWithVersionsNumbers keyword : keywords) {
+			if(firstPass == true){
+				firstPass = false;
+			}
+			else{
+				stringBuilder.append(" / ");
+			}
+			stringBuilder.append(keyword.getKeyword());
+		}
+		return stringBuilder.toString();
+	}
+	public boolean hasMultipleKeywordVersions() {
+		return keywords.size() > 1;
 	}
 
 }

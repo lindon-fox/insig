@@ -48,7 +48,7 @@ public class HesigView {
 					System.err.println("Sizes are not equal: " + tempList.size() + " vs " + kanji.size());
 				}
 				
-				HashMap<String, HeisigItem> kanjiMap = new HashMap<String, HeisigItem>();
+				HashMap<Integer, HeisigItem> kanjiMap = new HashMap<Integer, HeisigItem>();
 				for (HeisigItem item : kanji) {
 					kanjiMap.put(item.getHeisigIndex(), item);
 				}

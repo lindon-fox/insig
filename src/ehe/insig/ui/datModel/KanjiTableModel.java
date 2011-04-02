@@ -69,11 +69,11 @@ public class KanjiTableModel extends AbstractTableModel {
 	}
 
 	protected List<HeisigItem> items;//collection, maintaining order
-	protected HashMap<String, HeisigItem> itemMap;//a hashmap indexed on the heisig number
+	protected HashMap<Integer, HeisigItem> itemMap;//a hashmap indexed on the heisig number
 	public KanjiTableModel(List<HeisigItem> items) {
 		super();
 		this.items = items;
-		itemMap = new HashMap<String, HeisigItem>();
+		itemMap = new HashMap<Integer, HeisigItem>();
 		for (HeisigItem item : items) {
 			itemMap.put(item.getHeisigIndex(), item);
 		}
@@ -113,7 +113,7 @@ public class KanjiTableModel extends AbstractTableModel {
 		return item;
 	}
 
-	public HeisigItem get(String heisigIndex) {
+	public HeisigItem get(Integer heisigIndex) {
 		return itemMap.get(heisigIndex);
 	}
 

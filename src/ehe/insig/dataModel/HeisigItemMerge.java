@@ -29,9 +29,9 @@ public class HeisigItemMerge {
 			HeisigItem alternateItem) {
 		HeisigItem mergedItem = null;
 		//test critical properties
-		String heisigIndex = null;
+		int heisigIndex = -1;
 		String kanji = null;
-		testCriticalProperty(preferedItem.getHeisigIndex(), alternateItem
+		testCriticalProperty("" + preferedItem.getHeisigIndex(), "" + alternateItem
 				.getHeisigIndex());
 		heisigIndex = preferedItem.getHeisigIndex();
 		testCriticalProperty(preferedItem.getKanji(), alternateItem.getKanji());

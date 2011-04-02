@@ -80,7 +80,20 @@ public class HeisigDataReader {
 			while ((line = bufferedReader.readLine()) != null) {
 				String kanji = line;
 				line = bufferedReader.readLine();
-				String frame = line;
+				String frameString = line;
+				int frame;
+				if (frameString == null || frameString.equals("")) {
+					frame = -1;
+				} else {
+					try {
+						frame = Integer.parseInt(frameString);
+					} catch (NumberFormatException e) {
+						System.err
+								.println("was expecting a number for the index, but that is not what i got: "
+										+ frameString);
+						frame = -1;
+					}
+				}
 				line = bufferedReader.readLine();
 				String keyword = line;
 				line = bufferedReader.readLine();
@@ -209,7 +222,7 @@ public class HeisigDataReader {
 
 	public HeisigItem processLine(String line) {
 		HeisigItem heisigItem;
-		String heisigIndex;
+		int heisigIndex;
 		String kanji;
 		String keywordVersion3;
 		String keywordVersion4;
@@ -226,7 +239,19 @@ public class HeisigDataReader {
 		// key word
 		// /////////////////////////////////
 		String entry = entries[0];
-		heisigIndex = entry;
+		if (entry == null || entry.equals("")) {
+			heisigIndex = -1;
+		} else {
+			try {
+
+				heisigIndex = Integer.parseInt(entry);
+			} catch (NumberFormatException e) {
+				System.err
+						.println("Was expecting a numbwe doe rhw heisig index, but I got this instead: "
+								+ entry);
+				heisigIndex = -1;
+			}
+		}
 		// /////////////////////////////////
 		// Kanji
 		// /////////////////////////////////
