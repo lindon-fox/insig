@@ -109,7 +109,7 @@ public class HeisigItemMerge {
 		mergedItem = new HeisigItem(heisigIndex, kanji, kanjiStrokeCount, indexOrdinal, lessonNumber);
 		mergedItem.setKanjiRanking(kanjiRanking);
 		for (String primitive : primitives) {
-			mergedItem.addKanjiPart(primitive);
+			mergedItem.addKanjiPrimitive(primitive);
 		}
 		for (KeywordWithVersionsNumbers keywordWithVersionsNumbers : keywords) {
 			String keyword = keywordWithVersionsNumbers.getKeyword();

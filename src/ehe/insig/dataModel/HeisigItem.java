@@ -75,7 +75,7 @@ public class HeisigItem {
 		this.kanjiRanking = kanjiRanking;
 	}
 
-	public void addKanjiPart(String kanjiPart) {
+	public void addKanjiPrimitive(String kanjiPart) {
 		kanjiPrimitiveList.add(kanjiPart);
 	}
 	/**
@@ -172,6 +172,25 @@ public class HeisigItem {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * @return a formatted list to display as one string.
+	 */
+	public String getPrimitivesFormatted() {
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean firstPass = true;
+		for (String primitive : kanjiPrimitiveList) {
+			if(firstPass == true){
+				firstPass = false;
+			}
+			else{
+				stringBuilder.append(",");
+			}
+			stringBuilder.append(primitive);
+		}
+		return stringBuilder.toString();
+	}
+
+	
 	/**
 	 * @author lindon-fox
 	 * 

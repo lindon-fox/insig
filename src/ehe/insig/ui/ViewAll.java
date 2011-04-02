@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -134,6 +135,7 @@ public class ViewAll extends javax.swing.JFrame {
 							35));
 					{
 						kanjiToggleButton = new JToggleButton();
+//						kanjiToggleButton.setBorder(BorderFactory.createLineBorder(Color.BLACK)); TODO make the buttons a bit nicer...
 						searchButtonPanel.add(kanjiToggleButton);
 						kanjiToggleButton.setName("kanjiToggleButton");
 						kanjiToggleButton
@@ -260,7 +262,7 @@ public class ViewAll extends javax.swing.JFrame {
 												.getModel()
 												.getValueAt(
 														modelRow,
-														KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX);
+														KanjiTableModel.ColumnModel.heisigIndex.getIndex());
 										setDetails(heisigIndex);
 									}
 								}
@@ -293,13 +295,13 @@ public class ViewAll extends javax.swing.JFrame {
 						}
 					};
 					for (int i = 0; i < tableColumnModel.getColumnCount(); i++) {
-						if (i != KanjiTableModel.KANJI_COLUMN_INDEX) {
+						if (i != KanjiTableModel.ColumnModel.kanji.getIndex()) {
 							tableColumnModel.getColumn(i).setCellRenderer(
 									tableRomanCellRenderer);
 						}
 					}
 					for (int i = 0; i < tableColumnModel.getColumnCount(); i++) {
-						if (i != KanjiTableModel.KEYWORD_COLUMN_INDEX) {
+						if (i != KanjiTableModel.ColumnModel.keywords.getIndex()) {
 							tableColumnModel.getColumn(i).setPreferredWidth(25);
 						} else {
 							tableColumnModel.getColumn(i)
@@ -317,7 +319,7 @@ public class ViewAll extends javax.swing.JFrame {
 					};
 					//					tableCellRenderer.setFont(customFont);
 					column = tableColumnModel
-							.getColumn(KanjiTableModel.KANJI_COLUMN_INDEX);
+							.getColumn(KanjiTableModel.ColumnModel.kanji.getIndex());
 					column.setCellRenderer(tableKanjiCellRenderer);
 				}
 			}
@@ -495,27 +497,27 @@ public class ViewAll extends javax.swing.JFrame {
 	}
 
 	private void indexToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.HEISIG_INDEX_COLUMN_INDEX,
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.heisigIndex.getIndex(),
 				indexToggleButton);
 	}
 
 	private void kanjiToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.KANJI_COLUMN_INDEX,
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.kanji.getIndex(),
 				kanjiToggleButton);
 	}
 
 	private void keywordToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.KEYWORD_COLUMN_INDEX,
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.keywords.getIndex(),
 				keywordToggleButton);
 	}
 
 	private void strokeCountToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.STROKE_COUNT_COLUMN_INDEX,
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.strokeCount.getIndex(),
 				strokeCountToggleButton);
 	}
 
 	private void lessonNumberToggleButtonActionPerformed(ActionEvent evt) {
-		toggleButtonActionPerformed(KanjiTableModel.LESSON_NUMBER_COLUMN_INDEX,
+		toggleButtonActionPerformed(KanjiTableModel.ColumnModel.lessonNumber.getIndex(),
 				lessonNumberToggleButton);
 	}
 

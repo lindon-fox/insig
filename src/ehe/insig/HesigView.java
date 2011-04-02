@@ -9,6 +9,8 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import ehe.insig.dataModel.HeisigItem;
 import ehe.insig.dataModel.HeisigItemMerge;
@@ -23,7 +25,6 @@ public class HesigView {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				HeisigDataReader hesigDataReader = new HeisigDataReader(null);
@@ -55,7 +56,6 @@ public class HesigView {
 				for (HeisigItem item : tempList) {
 					HeisigItem mergedItem = HeisigItemMerge.merge(kanjiMap.get(item.getHeisigIndex()), item);
 					mergedItems.add(mergedItem);
-					System.out.println(mergedItem.toString());
 				}
 				
 				
@@ -68,7 +68,7 @@ public class HesigView {
 							kanji);
 					heisigDataWriter.writeHeisigData("/Users/" + System.getProperty("user.name") + "/Documents/Notes/Japanese/workspace/Insig/output/compare merged.csv", 
 							mergedItems);
-					next step is to be able to read this file in...
+//					next step is to be able to read this file in...
 					
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -83,7 +83,7 @@ public class HesigView {
 							"Here is the location: \n" + hesigDataReader.getCoreDataPath() +"\nTo see more details of the problem,\n" +
 									"run the program from a command prompt, 'java -jar insig.jar'");
 				} else {
-					ViewAll inst = new ViewAll(kanji);
+					ViewAll inst = new ViewAll(mergedItems);
 					inst.setLocationRelativeTo(null);
 					inst.setVisible(true);
 				}

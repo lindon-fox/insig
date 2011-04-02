@@ -29,7 +29,6 @@ public class HeisigDataWriter {
 		//write header
 		String header = generateHeaderEntry(columnDefinitions);
 
-		bufferedWriter.write(HeisigData.COMMENT);
 		bufferedWriter.write(header);
 		bufferedWriter.write("\n");
 
