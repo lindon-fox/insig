@@ -183,7 +183,7 @@ public class HeisigItem {
 				firstPass = false;
 			}
 			else{
-				stringBuilder.append(",");
+				stringBuilder.append(", ");
 			}
 			stringBuilder.append(primitive);
 		}

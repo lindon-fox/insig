@@ -74,8 +74,6 @@ public class HesigView {
 					e.printStackTrace();
 				}
 				
-				
-				
 				if (kanji == null) {
 					JOptionPane.showMessageDialog(null,
 							"Coult not read the data for the kanji." +
