@@ -606,7 +606,8 @@ public class ViewAll extends javax.swing.JFrame {
 		return indexToggleButton.isSelected() || kanjiToggleButton.isSelected()
 				|| keywordToggleButton.isSelected()
 				|| strokeCountToggleButton.isSelected()
-				|| lessonNumberToggleButton.isSelected();
+				|| lessonNumberToggleButton.isSelected()
+				|| primitivesToggleButton.isSelected();
 	}
 
 	private void setDetails(String heisigIndex) {
