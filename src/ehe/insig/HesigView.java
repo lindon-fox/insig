@@ -12,6 +12,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.apple.eawt.ApplicationAdapter;
+import com.apple.eawt.ApplicationEvent;
+import com.apple.mrj.MRJApplicationUtils;
+
 import ehe.insig.dataModel.HeisigItem;
 import ehe.insig.dataModel.HeisigItemMerge;
 import ehe.insig.io.HTMLKanjiDetailsGenerator;
@@ -27,6 +31,10 @@ public class HesigView {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				// take the menu bar off the jframe from mac specific app...
+				System.setProperty("apple.laf.useScreenMenuBar", "true");
+				
+
 				HeisigDataReader hesigDataReader = new HeisigDataReader(null);
 				List<HeisigItem> kanji = hesigDataReader.readCoreData();
 				//				HTMLKanjiDetailsGenerator htmlKanjiDetailsGenerator = new HTMLKanjiDetailsGenerator(kanji);

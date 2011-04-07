@@ -23,14 +23,20 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.border.LineBorder;
@@ -59,7 +65,7 @@ import ehe.insig.ui.datModel.KanjiTableModel;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class ViewAll extends javax.swing.JFrame {
+public class ViewAll extends javax.swing.JFrame{
 
 	private JScrollPane mainScrollPanel;
 	private JTable dataTable;
@@ -75,6 +81,12 @@ public class ViewAll extends javax.swing.JFrame {
 	private List<Integer> filterIndicies;
 	private boolean filterByAllFields;
 	Font kanjiFont = new Font("Hiragino Mincho Pro", Font.PLAIN, 26);
+	private JMenuItem filterHeadingPlaceholderMenuItem;
+	private JCheckBoxMenuItem lessonCheckboxButtonMenuItem;
+	private JSeparator navigateMenuSeparator;
+	private JMenuItem searchMenuItem;
+	private JMenu navigateMenu;
+	private JMenuBar menuBar;
 	private JToggleButton primitivesToggleButton;
 	private JScrollPane jScrollPane1;
 	private JTextPane detailsPrimitiveTextArea;
@@ -92,11 +104,14 @@ public class ViewAll extends javax.swing.JFrame {
 	private JPanel detailsKanjiContentPanel;
 	private JPanel detailsPanel;
 	private JSplitPane summaryAndDetailsSplitPanel;
-	private JPanel relativesPanel;
-	private JTextArea relativesTextArea;
 	Font romanFont = new Font("Helvetica", Font.PLAIN, 16);
 	Font searchTextFieldFont = new Font("Lucida Grande", Font.PLAIN, 19);
 	private KanjiTableModel kanjiTableModel;
+	private JCheckBoxMenuItem kanjiCheckboxButtonMenuItem;
+	private JCheckBoxMenuItem indexCheckboxButtonMenuItem;
+	private JCheckBoxMenuItem wordsCheckboxButtonMenuItem;
+	private JCheckBoxMenuItem partsCheckboxButtonMenuItem;
+	private JCheckBoxMenuItem strokesCheckboxButtonMenuItem;
 
 	public ViewAll(List<HeisigItem> items) {
 		super("insig");
@@ -104,14 +119,19 @@ public class ViewAll extends javax.swing.JFrame {
 		filterByAllFields = true;
 		filterIndicies = new ArrayList<Integer>();
 		initGUI();
+		
+		clearDetailsView();
+		checkClipboard();
+		searchTextField.requestFocus();
+	}
+
+	private void clearDetailsView() {
 		detailsKanjiLabel.setText("");
 		detailsStrokeCountLabel.setText("");
 		detailsHeisigNumberLabel.setText("");
 		detailsKeywordLabel.setText("");
 		detailsStoryTextArea.setText("");
 		detailsPrimitiveTextArea.setText("");
-		checkClipboard();
-		searchTextField.requestFocus();
 	}
 
 	private void checkClipboard() {
@@ -124,7 +144,7 @@ public class ViewAll extends javax.swing.JFrame {
 				searchTextField.setText((String) contents
 						.getTransferData(DataFlavor.stringFlavor));
 				updateFilter();
-				if(tableRowSorter.getViewRowCount() > 0){
+				if (tableRowSorter.getViewRowCount() > 0) {
 					dataTable.setRowSelectionInterval(0, 0);
 				}
 			} catch (UnsupportedFlavorException ex) {
@@ -142,6 +162,164 @@ public class ViewAll extends javax.swing.JFrame {
 		try {
 			{
 				this.setMinimumSize(new java.awt.Dimension(600, 500));
+				{
+					menuBar = new JMenuBar();
+					setJMenuBar(menuBar);
+					{
+						navigateMenu = new JMenu();
+						navigateMenu.setText("Navigate");
+						menuBar.add(navigateMenu);
+						navigateMenu.setName("navigateMenu");
+						{
+							searchMenuItem = new JMenuItem();
+							searchMenuItem.setText("Search");
+							navigateMenu.add(searchMenuItem);
+							searchMenuItem.setName("searchMenuItem");
+							searchMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											searchTextField.requestFocus();
+										}
+									});
+							searchMenuItem.setAccelerator(KeyStroke
+									.getKeyStroke(KeyEvent.VK_F, Toolkit
+											.getDefaultToolkit()
+											.getMenuShortcutKeyMask()));
+						}
+						{
+							navigateMenuSeparator = new JSeparator();
+							navigateMenu.add(navigateMenuSeparator);
+						}
+						{
+							filterHeadingPlaceholderMenuItem = new JMenuItem();
+							navigateMenu.add(filterHeadingPlaceholderMenuItem);
+							filterHeadingPlaceholderMenuItem
+									.setName("filterHeadingPlaceholderMenuItem");
+							filterHeadingPlaceholderMenuItem
+									.setText("Filters:");
+							filterHeadingPlaceholderMenuItem.setEnabled(false);
+						}
+						{
+							//kanji
+							kanjiCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(kanjiCheckboxButtonMenuItem);
+							kanjiCheckboxButtonMenuItem.setText("\tkanji");
+							kanjiCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_1, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+							kanjiCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											kanjiToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											kanjiToggleButtonActionPerformed(evt);
+										}
+									});
+							//index
+							indexCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(indexCheckboxButtonMenuItem);
+							indexCheckboxButtonMenuItem.setText("\tindex");
+							indexCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_2, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+							indexCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											indexToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											indexToggleButtonActionPerformed(evt);
+										}
+									});
+							//words
+							wordsCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(wordsCheckboxButtonMenuItem);
+							wordsCheckboxButtonMenuItem.setText("\twords");
+							wordsCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_3, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+							wordsCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											keywordToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											keywordToggleButtonActionPerformed(evt);
+										}
+									});
+							//prats
+							partsCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(partsCheckboxButtonMenuItem);
+							partsCheckboxButtonMenuItem.setText("\tparts");
+							partsCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_4, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+							partsCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											primitivesToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											primitivesToggleButtonActionPerformed(evt);
+										}
+									});
+							//strokes
+							strokesCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(strokesCheckboxButtonMenuItem);
+							strokesCheckboxButtonMenuItem.setText("\tstrokes");
+							strokesCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_5, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+							strokesCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											strokeCountToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											strokeCountToggleButtonActionPerformed(evt);
+										}
+									});
+							//lesson
+							lessonCheckboxButtonMenuItem = new JCheckBoxMenuItem();
+							navigateMenu.add(lessonCheckboxButtonMenuItem);
+							lessonCheckboxButtonMenuItem
+									.setName("lessonCheckboxButtonMenuItem");
+							lessonCheckboxButtonMenuItem.setText("\tlesson");
+							lessonCheckboxButtonMenuItem
+									.addActionListener(new ActionListener() {
+										public void actionPerformed(
+												ActionEvent evt) {
+											lessonNumberToggleButton
+													.setSelected(!lessonNumberToggleButton
+															.isSelected());
+											lessonNumberToggleButtonActionPerformed(evt);
+										}
+									});
+							lessonCheckboxButtonMenuItem
+									.setAccelerator(KeyStroke.getKeyStroke(
+											KeyEvent.VK_6, Toolkit
+													.getDefaultToolkit()
+													.getMenuShortcutKeyMask()));
+						}
+					}
+				}
 				this.setSize(900, 800);
 			}
 			{
@@ -179,6 +357,7 @@ public class ViewAll extends javax.swing.JFrame {
 							501, 35));
 					{
 						kanjiToggleButton = new JToggleButton();
+						kanjiToggleButton.setText("kanji");
 						//						kanjiToggleButton.setBorder(BorderFactory.createLineBorder(Color.BLACK)); TODO make the buttons a bit nicer...
 						searchButtonPanel.add(kanjiToggleButton);
 						kanjiToggleButton.setName("kanjiToggleButton");
@@ -193,6 +372,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						indexToggleButton = new JToggleButton();
+						indexToggleButton.setText("index");
 						searchButtonPanel.add(indexToggleButton);
 						indexToggleButton.setName("indexToggleButton");
 						indexToggleButton
@@ -206,6 +386,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						keywordToggleButton = new JToggleButton();
+						keywordToggleButton.setText("word");
 						searchButtonPanel.add(keywordToggleButton);
 						keywordToggleButton.setName("keywordToggleButton");
 						keywordToggleButton
@@ -219,6 +400,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						primitivesToggleButton = new JToggleButton();
+						primitivesToggleButton.setText("parts");
 						searchButtonPanel.add(primitivesToggleButton);
 						primitivesToggleButton
 								.setName("primitivesToggleButton");
@@ -234,6 +416,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						strokeCountToggleButton = new JToggleButton();
+						strokeCountToggleButton.setText("strokes");
 						searchButtonPanel.add(strokeCountToggleButton);
 						strokeCountToggleButton
 								.setName("strokeCountToggleButton");
@@ -248,6 +431,7 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 					{
 						lessonNumberToggleButton = new JToggleButton();
+						lessonNumberToggleButton.setText("lesson");
 						searchButtonPanel.add(lessonNumberToggleButton);
 						lessonNumberToggleButton
 								.setName("lessonNumberToggleButton");
@@ -256,6 +440,9 @@ public class ViewAll extends javax.swing.JFrame {
 						lessonNumberToggleButton
 								.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent evt) {
+										lessonCheckboxButtonMenuItem
+												.setSelected(!lessonCheckboxButtonMenuItem
+														.isSelected());
 										lessonNumberToggleButtonActionPerformed(evt);
 									}
 								});
@@ -268,20 +455,6 @@ public class ViewAll extends javax.swing.JFrame {
 			//////////////////////////////////////////////////////////
 
 			{
-				{
-					relativesPanel = new JPanel();
-					relativesPanel.setVisible(false);
-					BorderLayout relativesPanelLayout = new BorderLayout();
-					relativesPanel.setLayout(relativesPanelLayout);
-					{
-						relativesTextArea = new JTextArea();
-						relativesPanel.add(relativesTextArea,
-								BorderLayout.CENTER);
-						//						relativesTextArea.setPreferredSize(new java.awt.Dimension(187, 719));
-						relativesTextArea.setEditable(false);
-						relativesTextArea.setText("This is the rel");
-					}
-				}
 			}
 
 			//////////////////////////////////////////////////////////
@@ -623,11 +796,18 @@ public class ViewAll extends javax.swing.JFrame {
 		for (String searchItem : searchItems) {
 			//TODO ignore CAPS...
 			//TODO o something about bad characters (like parenthasis) when passed in.
-			if (filterByAllFields) { // if we should search all of the fields
-				filters.add(RowFilter.regexFilter(searchItem));
-			} else {// if we should only search some of them.
-				filters.add(RowFilter.regexFilter(searchItem,
-						getFilterIndiciesArray()));
+			try {
+				if (filterByAllFields) { // if we should search all of the fields
+					filters.add(RowFilter.regexFilter(searchItem));
+				} else {// if we should only search some of them.
+					filters.add(RowFilter.regexFilter(searchItem,
+							getFilterIndiciesArray()));
+				}
+			} catch (Exception exception) {
+				System.err.println(exception.toString());
+				System.out
+						.println("the search item is not allowed, will ignore: "
+								+ searchItem);
 			}
 		}
 		RowFilter<Object, Object> rowFilter = RowFilter.andFilter(filters);
@@ -635,7 +815,7 @@ public class ViewAll extends javax.swing.JFrame {
 		// RowFilter<KanjiTableModel, Object> rowFilter = RowFilter
 		// .regexFilter(searchText);
 		tableRowSorter.setRowFilter(rowFilter);
-		
+
 		searchTextField.requestFocus();
 	}
 
