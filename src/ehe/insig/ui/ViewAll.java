@@ -7,7 +7,9 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
@@ -67,6 +69,8 @@ import ehe.insig.ui.datModel.KanjiTableModel;
  */
 public class ViewAll extends javax.swing.JFrame {
 
+	private static final String COPY_KEYWORD_TO_CLIPBOARD_TOOLTIP = "Copies a summary of the selected items onto the system clipboard (accessible through 'paste')";
+	private static final String COPY_KEYWORD_SUMMARY_TO_CLIPBOARD_TEXT = "Copy keyword summary to clipboard...";
 	private JScrollPane mainScrollPanel;
 	private JTable dataTable;
 	private JTextField searchTextField;
@@ -83,7 +87,9 @@ public class ViewAll extends javax.swing.JFrame {
 	private JCheckBoxMenuItem rtk3WritingDataSetCheckBoxMenuItem;
 	private JCheckBoxMenuItem rtk2DataSetCheckboxMenuItem;
 	private JCheckBoxMenuItem rtk1DataSetCheckBoxMenuItem;
-	private JMenu appendKeywordMeaningsMenuItem;
+	private JMenuItem copyKeywordSummaryToClipboardFromSelectionMenuItem;
+	private JSeparator toolsSummarySeparator;
+	private JMenuItem appendKeywordMeaningsMenuItem;
 	private JMenu toolsMenu;
 	private JMenuItem searchORMenuItem;
 	private JPanel searchTextButtonPanel;
@@ -180,7 +186,7 @@ public class ViewAll extends javax.swing.JFrame {
 						navigateMenu.setName("navigateMenu");
 						{
 							searchMenuItem = new JMenuItem();
-							searchMenuItem.setText("Search (more accuracy)");
+							searchMenuItem.setText("Search");
 							navigateMenu.add(searchMenuItem);
 							searchMenuItem.setName("searchMenuItem");
 							searchMenuItem
@@ -199,7 +205,7 @@ public class ViewAll extends javax.swing.JFrame {
 							searchORMenuItem = new JMenuItem();
 							navigateMenu.add(searchORMenuItem);
 							searchORMenuItem.setName("searchORMenuItem");
-							searchORMenuItem.setText("Search (more results)");
+							searchORMenuItem.setText("Search (multiple kanji)");
 							searchORMenuItem
 									.addActionListener(new ActionListener() {
 										public void actionPerformed(
@@ -370,10 +376,35 @@ public class ViewAll extends javax.swing.JFrame {
 						toolsMenu.setName("toolsMenu");
 						toolsMenu.setText("Tools");
 						{
-							appendKeywordMeaningsMenuItem = new JMenu();
+							copyKeywordSummaryToClipboardFromSelectionMenuItem = new JMenuItem();
+							copyKeywordSummaryToClipboardFromSelectionMenuItem
+									.setText(COPY_KEYWORD_SUMMARY_TO_CLIPBOARD_TEXT);
+							copyKeywordSummaryToClipboardFromSelectionMenuItem
+									.setToolTipText(COPY_KEYWORD_TO_CLIPBOARD_TOOLTIP);
+							copyKeywordSummaryToClipboardFromSelectionMenuItem
+									.addActionListener(new ActionListener() {
+
+										@Override
+										public void actionPerformed(
+												ActionEvent e) {
+											copyKeywordSummaryToClipboardAction();
+										}
+
+									});
+							toolsMenu
+									.add(copyKeywordSummaryToClipboardFromSelectionMenuItem);
+						}
+						{
+							toolsSummarySeparator = new JSeparator();
+							toolsMenu.add(toolsSummarySeparator);
+						}
+						{
+							appendKeywordMeaningsMenuItem = new JMenuItem();
 							toolsMenu.add(appendKeywordMeaningsMenuItem);
-							appendKeywordMeaningsMenuItem.setName("appendKeywordMeaningsMenuItem");
-							appendKeywordMeaningsMenuItem.setText("Append keyword meanings to file...");
+							appendKeywordMeaningsMenuItem
+									.setName("appendKeywordMeaningsMenuItem");
+							appendKeywordMeaningsMenuItem
+									.setText("Append keyword meanings to file...");
 						}
 					}
 				}
@@ -394,7 +425,8 @@ public class ViewAll extends javax.swing.JFrame {
 					searchButtonLayout.setHgap(1);
 					searchButtonPanel.setLayout(searchButtonLayout);
 					searchPanel.add(searchButtonPanel, BorderLayout.WEST);
-					searchButtonPanel.setPreferredSize(new java.awt.Dimension(322, 35));
+					searchButtonPanel.setPreferredSize(new java.awt.Dimension(
+							322, 35));
 					{
 						kanjiToggleButton = new JToggleButton();
 						kanjiToggleButton.setText("kanji");
@@ -467,7 +499,7 @@ public class ViewAll extends javax.swing.JFrame {
 						searchTextButtonPanel.add(searchORTextField);
 						searchORTextField.setName("searchORTextField");
 						searchORTextField.setFont(searchTextFieldFont);
-						searchORTextField.setToolTipText("enter search items (returns more results)");
+						searchORTextField.setToolTipText("enter search items (the more words, the fewer results)");
 						searchORTextField
 								.setPreferredSize(new java.awt.Dimension(160,
 										35));
@@ -481,7 +513,8 @@ public class ViewAll extends javax.swing.JFrame {
 						searchTextField = new JTextField();
 						searchTextButtonPanel.add(searchTextField);
 						searchTextField.setName("searchTextField");
-						searchTextField.setToolTipText("enter search items (returns less results)");
+						searchTextField
+								.setToolTipText("enter search items (for multiple kanji - the more characters, the more results)");
 						searchTextField
 								.setPreferredSize(new java.awt.Dimension(401,
 										35));
@@ -495,17 +528,6 @@ public class ViewAll extends javax.swing.JFrame {
 					}
 				}
 			}
-
-			//////////////////////////////////////////////////////////
-			// the right hand side of the main split panel (the relatives area)
-			//////////////////////////////////////////////////////////
-
-			{
-			}
-
-			//////////////////////////////////////////////////////////
-			// details text area
-			//////////////////////////////////////////////////////////
 
 			//////////////////////////////////////////////////////////
 			// results area
@@ -830,6 +852,7 @@ public class ViewAll extends javax.swing.JFrame {
 		updateFilter();
 		//check for shortcuts?
 		if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+			System.out.println("enter bttn pressed...");
 			dataTable.requestFocus();
 		}
 	}
@@ -840,31 +863,45 @@ public class ViewAll extends javax.swing.JFrame {
 
 		List<RowFilter<Object, Object>> filters = new ArrayList<RowFilter<Object, Object>>();
 		for (String searchItem : searchItems) {
-			//TODO ignore CAPS...
-			//TODO o something about bad characters (like parenthasis) when passed in.
-			try {
-				if (filterByAllFields) { // if we should search all of the fields
-					filters.add(RowFilter.regexFilter(searchItem));
-				} else {// if we should only search some of them.
-					filters.add(RowFilter.regexFilter(searchItem,
-							getFilterIndiciesArray()));
-				}
-			} catch (Exception exception) {
-				System.err.println(exception.toString());
-				System.out
-						.println("the search item is not allowed, will ignore: "
-								+ searchItem);
+			if (searchItem != null && searchItem.equals("") == false) {
+				addFilter(filters, searchItem);
 			}
 		}
+		List<RowFilter<Object, Object>> orFilters = new ArrayList<RowFilter<Object, Object>>();
 		String searchORText = searchORTextField.getText();
-//		String[] searchORItems = searchText.TODO
+		char[] searchORItems = searchORText.toCharArray();
+		for (char searchItem : searchORItems) {
+			addFilter(orFilters, "" + searchItem);
+		}
+		//		String[] searchORItems = searchText.TODO
+		if (orFilters.size() > 0) {
+			filters.add(RowFilter.orFilter(orFilters));
+		}
 		RowFilter<Object, Object> rowFilter = RowFilter.andFilter(filters);
 
 		// RowFilter<KanjiTableModel, Object> rowFilter = RowFilter
 		// .regexFilter(searchText);
 		tableRowSorter.setRowFilter(rowFilter);
 
-		searchTextField.requestFocus();
+		//		searchTextField.requestFocus();
+	}
+
+	private void addFilter(List<RowFilter<Object, Object>> filters,
+			String searchItem) {
+		//TODO ignore CAPS...
+		//TODO o something about bad characters (like parenthasis) when passed in.
+		try {
+			if (filterByAllFields) { // if we should search all of the fields
+				filters.add(RowFilter.regexFilter(searchItem));
+			} else {// if we should only search some of them.
+				filters.add(RowFilter.regexFilter(searchItem,
+						getFilterIndiciesArray()));
+			}
+		} catch (Exception exception) {
+			System.err.println(exception.toString());
+			System.out.println("the search item is not allowed, will ignore: "
+					+ searchItem);
+		}
 	}
 
 	private int[] getFilterIndiciesArray() {
@@ -924,7 +961,8 @@ public class ViewAll extends javax.swing.JFrame {
 	}
 
 	private boolean toggleButtonSelected() {
-		return indexCheckboxButtonMenuItem.isSelected() || kanjiCheckboxButtonMenuItem.isSelected()
+		return indexCheckboxButtonMenuItem.isSelected()
+				|| kanjiCheckboxButtonMenuItem.isSelected()
 				|| keywordToggleButton.isSelected()
 				|| strokesCheckboxButtonMenuItem.isSelected()
 				|| lessonCheckboxButtonMenuItem.isSelected()
@@ -960,4 +998,24 @@ public class ViewAll extends javax.swing.JFrame {
 		this.validate(); // this is to make sure that the new text does not make the UI 'funny'.
 	}
 
+	private void copyKeywordSummaryToClipboardAction() {
+		int[] selectedRows = dataTable.getSelectedRows();
+		for (int selectedRow : selectedRows) {
+			int modelRow = dataTable.convertRowIndexToModel(selectedRow);
+			Integer heisigIndex = (Integer) dataTable.getModel().getValueAt(
+					modelRow,
+					KanjiTableModel.ColumnModel.heisigIndex.getIndex());
+			HeisigItem heisigItem = kanjiTableModel.get(heisigIndex);
+			//need to append this to the clipboard...
+			// Get the system toolkit
+			final Toolkit toolkit = Toolkit.getDefaultToolkit();
+			// Use the toolkit to get the system clipboard
+			final Clipboard clipboard = toolkit.getSystemClipboard();
+			// Set the contents of the clipboard to our string
+			clipboard.setContents(new StringSelection(heisigItem
+					.getKeywordKanjiSummary()), null);
+
+		}
+		System.out.println("Items put onto clipboard");
+	}
 }

@@ -263,6 +263,7 @@ public class HeisigItem {
 		}
 		return keywordVersionNumbers;
 	}
+	
 	/**
 	 * @param versionNumber
 	 * @return the keyword for the version number. Null if not found.
@@ -277,6 +278,7 @@ public class HeisigItem {
 		//the keyword for the version number has not been found, so return null.
 		return null;
 	}
+	
 	public String getKeywordsFormattedSimply() {
 		StringBuilder stringBuilder = new StringBuilder();
 		boolean firstPass = true;
@@ -291,8 +293,13 @@ public class HeisigItem {
 		}
 		return stringBuilder.toString();
 	}
+	
 	public boolean hasMultipleKeywordVersions() {
 		return keywords.size() > 1;
+	}
+	
+	public String getKeywordKanjiSummary() {
+		return this.kanji + " - " + this.getKeywordsFormattedSimply();
 	}
 
 }
