@@ -29,6 +29,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -87,6 +88,10 @@ public class ViewAll extends javax.swing.JFrame {
 	private JCheckBoxMenuItem rtk3WritingDataSetCheckBoxMenuItem;
 	private JCheckBoxMenuItem rtk2DataSetCheckboxMenuItem;
 	private JCheckBoxMenuItem rtk1DataSetCheckBoxMenuItem;
+	private JMenuItem aboutMenuItem;
+	private JSeparator helpMenuSeparator;
+	private JMenuItem noHelpMenuItem;
+	private JMenu helpMenu;
 	private JMenuItem copyKeywordSummaryToClipboardFromSelectionMenuItem;
 	private JSeparator toolsSummarySeparator;
 	private JMenuItem appendKeywordMeaningsMenuItem;
@@ -405,6 +410,41 @@ public class ViewAll extends javax.swing.JFrame {
 									.setName("appendKeywordMeaningsMenuItem");
 							appendKeywordMeaningsMenuItem
 									.setText("Append keyword meanings to file...");
+							appendKeywordMeaningsMenuItem.addActionListener(new ActionListener() {
+								
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									appendKeywordMeaningAction(e);
+								}
+							});
+						}
+					}
+					{
+						helpMenu = new JMenu();
+						helpMenu.setText("Help");
+						menuBar.add(helpMenu);
+						{
+							noHelpMenuItem = new JMenuItem();
+							noHelpMenuItem.setText("This is not the help you are looking for.");
+							noHelpMenuItem.setEnabled(false);
+							noHelpMenuItem.setToolTipText("There be no help here.");
+							helpMenu.add(noHelpMenuItem);
+						}
+						{
+							helpMenuSeparator = new JSeparator();
+							helpMenu.add(helpMenuSeparator);
+						}
+						{
+							aboutMenuItem = new JMenuItem();
+							aboutMenuItem.setText("About insig");
+							aboutMenuItem.addActionListener(new ActionListener() {
+								
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									aboutAction(e);
+								}
+							});
+							helpMenu.add(aboutMenuItem);
 						}
 					}
 				}
@@ -839,6 +879,19 @@ public class ViewAll extends javax.swing.JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected void aboutAction(ActionEvent e) {
+		JOptionPane.showMessageDialog(this, "insig (heisig index)\ninsig uses data from the following sources:\n" +
+				"http://ziggr.com/heisig/\n" +
+				"http://www.ravenbrook.com/project/etp24/tool/cgi/heisig-index/?action=frame_order\n" +
+				"http://www.csse.monash.edu.au/~jwb/kanjidic.html", "About insig", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	protected void appendKeywordMeaningAction(ActionEvent e) {
+		AppendDetailsToCSVWindow appendDetailsToCSVAction = new AppendDetailsToCSVWindow(kanjiTableModel, this);
+		appendDetailsToCSVAction.setVisible(true);
+		
 	}
 
 	private void makeTextFieldLookLikeLabel(JTextField textField) {
